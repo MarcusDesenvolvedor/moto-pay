@@ -4,6 +4,6 @@ export * from './hooks/use-login';
 export * from './hooks/use-signup';
 export * from './hooks/use-logout';
 export * from './hooks/use-current-user';
-export * from './context/auth-context';
+export * from './api/auth.api';
 export * from './types/auth.types';
-
+export * from './store/auth.store';

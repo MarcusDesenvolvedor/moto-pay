@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { getToken } from '../../../shared/storage/token-storage';
+import { getToken } from '../../../../../../shared/storage/token-storage';
 import { useQuery } from '@tanstack/react-query';
 import { authApi } from '../api/auth.api';
 import { UserResponse } from '../types/auth.types';

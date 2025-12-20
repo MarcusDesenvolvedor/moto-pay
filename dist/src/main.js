@@ -11,12 +11,16 @@ async function bootstrap() {
         transform: true,
     }));
     app.enableCors({
-        origin: process.env.FRONTEND_URL || '*',
+        origin: true,
         credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
     });
-    const port = process.env.PORT || 3000;
-    await app.listen(port);
-    console.log(`Application is running on: http://localhost:${port}`);
+    const port = process.env.PORT || 3001;
+    await app.listen(port, '0.0.0.0');
+    console.log(`Application is running on: http://0.0.0.0:${port}`);
+    console.log(`Local: http://localhost:${port}`);
+    console.log(`Para usar tunnel, configure EXPO_PUBLIC_API_URL no .env`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map

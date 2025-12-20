@@ -1,4 +1,4 @@
-import { apiClient } from '../../../shared/api/api-client';
+import { apiClient } from '../../../../../../shared/api/api-client';
 import {
   SignupRequest,
   LoginRequest,
@@ -46,4 +46,3 @@ export const authApi = {
     return response.data;
   },
 };
-
