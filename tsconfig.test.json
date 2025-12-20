@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "types": ["jest", "node"],
+    "noImplicitAny": false
+  },
+  "include": [
+    "features/**/*.spec.ts",
+    "features/**/*.test.ts",
+    "shared/**/*.spec.ts",
+    "shared/**/*.test.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
+
