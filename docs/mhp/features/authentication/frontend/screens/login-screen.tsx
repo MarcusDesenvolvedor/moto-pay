@@ -2,22 +2,40 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   Alert,
-  ActivityIndicator,
 } from 'react-native';
-import { useLogin } from '../hooks/use-login';
 import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import { Input } from '../../../../../../shared/components/Input';
+import { Button } from '../../../../../../shared/components/Button';
+import { AuthHeader } from '../../../../../../shared/components/AuthHeader';
+import { useLogin } from '../hooks/use-login';
+import { colors } from '../../../../../../shared/theme/colors';
+import { typography } from '../../../../../../shared/theme/typography';
+import { spacing } from '../../../../../../shared/theme/spacing';
+
+type AuthStackParamList = {
+  Login: undefined;
+  Register: undefined;
+};
+
+type LoginScreenNavigationProp = StackNavigationProp<
+  AuthStackParamList,
+  'Login'
+>;
 
 export function LoginScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<LoginScreenNavigationProp>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-    {},
-  );
+  const [errors, setErrors] = useState<{
+    email?: string;
+    password?: string;
+  }>({});
 
   const loginMutation = useLogin();
 
@@ -25,15 +43,15 @@ export function LoginScreen() {
     const newErrors: { email?: string; password?: string } = {};
 
     if (!email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = 'Email é obrigatório';
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Email is invalid';
+      newErrors.email = 'Email inválido';
     }
 
     if (!password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'Senha é obrigatória';
     } else if (password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+      newErrors.password = 'Senha deve ter no mínimo 8 caracteres';
     }
 
     setErrors(newErrors);
@@ -47,152 +65,133 @@ export function LoginScreen() {
 
     try {
       await loginMutation.mutateAsync({ email, password });
-    } catch (error: any) {
-      Alert.alert(
-        'Login Failed',
-        error?.response?.data?.message || 'Invalid credentials',
-      );
+    } catch (error: unknown) {
+      let errorMessage = 'Erro ao fazer login. Tente novamente.';
+      
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data?: { message?: string }; status?: number } };
+        if (axiosError.response?.status === 401) {
+          errorMessage = 'Credenciais inválidas. Verifique seu email e senha.';
+        } else if (axiosError.response?.data?.message) {
+          errorMessage = axiosError.response.data.message;
+        } else if (axiosError.response?.status === 404 || axiosError.response?.status === 0) {
+          errorMessage = 'Erro de conexão. Verifique se o servidor está rodando.';
+        }
+      } else if (error instanceof Error) {
+        if (error.message.includes('Network Error') || error.message.includes('timeout')) {
+          errorMessage = 'Erro de rede. Verifique sua conexão e se o servidor está acessível.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      Alert.alert('Erro ao fazer login', errorMessage);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-
-      <View style={styles.form}>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={[styles.input, errors.email && styles.inputError]}
-            value={email}
-            onChangeText={(text) => {
-              setEmail(text);
-              if (errors.email) {
-                setErrors({ ...errors, email: undefined });
-              }
-            }}
-            placeholder="Enter your email"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.content}>
+          <AuthHeader
+            title="MotoPay"
+            subtitle="Faça login para continuar"
           />
-          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+
+          <View style={styles.form}>
+            <Input
+              label="Email"
+              value={email}
+              onChangeText={(text) => {
+                setEmail(text);
+                if (errors.email) {
+                  setErrors({ ...errors, email: undefined });
+                }
+              }}
+              placeholder="seu@email.com"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              error={errors.email}
+            />
+
+            <Input
+              label="Senha"
+              value={password}
+              onChangeText={(text) => {
+                setPassword(text);
+                if (errors.password) {
+                  setErrors({ ...errors, password: undefined });
+                }
+              }}
+              placeholder="Digite sua senha"
+              secureTextEntry
+              autoCapitalize="none"
+              error={errors.password}
+            />
+
+            <Text
+              style={styles.forgotPassword}
+              onPress={() => {
+                Alert.alert(
+                  'Recuperação de senha',
+                  'Password recovery will be available soon.',
+                );
+              }}
+            >
+              Esqueceu sua senha?
+            </Text>
+
+            <Button
+              title="Entrar"
+              onPress={handleLogin}
+              loading={loginMutation.isPending}
+              style={styles.button}
+            />
+
+            <Button
+              title="Criar conta"
+              onPress={() => navigation.navigate('Register')}
+              variant="outline"
+              style={styles.button}
+            />
+          </View>
         </View>
-
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={[styles.input, errors.password && styles.inputError]}
-            value={password}
-            onChangeText={(text) => {
-              setPassword(text);
-              if (errors.password) {
-                setErrors({ ...errors, password: undefined });
-              }
-            }}
-            placeholder="Enter your password"
-            secureTextEntry
-            autoCapitalize="none"
-          />
-          {errors.password && (
-            <Text style={styles.errorText}>{errors.password}</Text>
-          )}
-        </View>
-
-        <TouchableOpacity
-          style={[
-            styles.button,
-            loginMutation.isPending && styles.buttonDisabled,
-          ]}
-          onPress={handleLogin}
-          disabled={loginMutation.isPending}
-        >
-          {loginMutation.isPending ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Login</Text>
-          )}
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.linkButton}
-          onPress={() => {
-            // @ts-ignore - navigation type will be defined in app navigation
-            navigation.navigate('Signup');
-          }}
-        >
-          <Text style={styles.linkText}>
-            Don't have an account? Sign up
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
   },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    marginBottom: 40,
-    textAlign: 'center',
+  scrollContent: {
+    flexGrow: 1,
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: spacing.lg,
   },
   form: {
     width: '100%',
   },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#333',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: '#fff',
-  },
-  inputError: {
-    borderColor: '#ff4444',
-  },
-  errorText: {
-    color: '#ff4444',
-    fontSize: 12,
-    marginTop: 4,
+  forgotPassword: {
+    ...typography.bodySmall,
+    color: colors.primaryLight,
+    textAlign: 'right',
+    marginTop: spacing.xs,
+    marginBottom: spacing.md,
   },
   button: {
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
-    padding: 16,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  linkButton: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  linkText: {
-    color: '#007AFF',
-    fontSize: 14,
+    marginTop: spacing.md,
   },
 });
-

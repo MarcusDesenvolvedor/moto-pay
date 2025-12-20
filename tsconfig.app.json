@@ -1,0 +1,22 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true
+  },
+  "include": [
+    "docs/mhp/features/**/frontend/**/*",
+    "shared/components/**/*",
+    "shared/theme/**/*",
+    "shared/storage/**/*",
+    "shared/api/**/*",
+    "navigation/**/*",
+    "App.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "docs/mhp/features/**/backend/**/*",
+    "src/**/*"
+  ]
+}
+
