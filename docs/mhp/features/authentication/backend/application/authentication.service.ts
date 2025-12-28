@@ -91,12 +91,23 @@ export class AuthenticationService {
     };
   }
 
-  async refreshToken(refreshToken: string): Promise<AuthResponseDto> {
-    const tokenEntity = await this.refreshTokenRepository.findByToken(
-      refreshToken,
-    );
+  async refreshToken(refreshToken: string): Promise<{ accessToken: string }> {
+    // Get all active refresh tokens and compare with bcrypt
+    // We need to check all tokens because we can't reverse the hash
+    const allTokens = await this.refreshTokenRepository.findAllActive();
+    
+    let tokenEntity: RefreshToken | null = null;
+    
+    // Compare provided token with all stored hashes
+    for (const storedToken of allTokens) {
+      const isValid = await bcrypt.compare(refreshToken, storedToken.token);
+      if (isValid && storedToken.isValid()) {
+        tokenEntity = storedToken;
+        break;
+      }
+    }
 
-    if (!tokenEntity || !tokenEntity.isValid()) {
+    if (!tokenEntity) {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
 
@@ -106,21 +117,27 @@ export class AuthenticationService {
       throw new UnauthorizedException('User not found or inactive');
     }
 
-    const tokens = await this.generateTokens(user);
+    // Generate only a new access token (refresh token remains the same)
+    const accessToken = await this.generateAccessToken(user);
 
     return {
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        fullName: user.fullName,
-      },
+      accessToken,
     };
   }
 
   async logout(refreshToken: string): Promise<void> {
-    await this.refreshTokenRepository.revokeToken(refreshToken);
+    // Find and revoke the token by comparing with all stored tokens
+    const allTokens = await this.refreshTokenRepository.findAllActive();
+    
+    for (const storedToken of allTokens) {
+      const isValid = await bcrypt.compare(refreshToken, storedToken.token);
+      if (isValid) {
+        await this.refreshTokenRepository.revokeToken(storedToken.token);
+        return;
+      }
+    }
+    
+    // If token not found, silently succeed (idempotent logout)
   }
 
   async getCurrentUser(userId: string): Promise<UserResponseDto> {
@@ -155,6 +172,34 @@ export class AuthenticationService {
     accessToken: string;
     refreshToken: string;
   }> {
+    const accessToken = await this.generateAccessToken(user);
+
+    // Generate refresh token with longer expiration (30 days)
+    const refreshTokenValue = this.generateRandomToken();
+    const refreshTokenHash = await this.hashRefreshToken(refreshTokenValue);
+    
+    const expiresAt = new Date();
+    const refreshTokenDays = this.configService.get<number>(
+      'JWT_REFRESH_EXPIRES_DAYS',
+      30,
+    ) || 30;
+    expiresAt.setDate(expiresAt.getDate() + refreshTokenDays);
+
+    const refreshTokenEntity = RefreshToken.create(
+      user.id,
+      refreshTokenHash, // Store hashed token
+      expiresAt,
+    );
+
+    await this.refreshTokenRepository.save(refreshTokenEntity);
+
+    return {
+      accessToken,
+      refreshToken: refreshTokenValue, // Return plain token to client
+    };
+  }
+
+  private async generateAccessToken(user: User): Promise<string> {
     const payload = {
       sub: user.id,
       email: user.email,
@@ -165,29 +210,18 @@ export class AuthenticationService {
       '15m',
     ) || '15m';
 
-    const accessToken = await (this.jwtService.signAsync as any)(
+    return await (this.jwtService.signAsync as any)(
       payload,
       {
         expiresIn: accessTokenExpiresIn,
       },
     );
+  }
 
-    const refreshTokenValue = this.generateRandomToken();
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
-
-    const refreshTokenEntity = RefreshToken.create(
-      user.id,
-      refreshTokenValue,
-      expiresAt,
-    );
-
-    await this.refreshTokenRepository.save(refreshTokenEntity);
-
-    return {
-      accessToken,
-      refreshToken: refreshTokenValue,
-    };
+  private async hashRefreshToken(token: string): Promise<string> {
+    // Use bcrypt to hash refresh tokens (same as passwords)
+    const saltRounds = 10;
+    return bcrypt.hash(token, saltRounds);
   }
 
   private generateRandomToken(): string {

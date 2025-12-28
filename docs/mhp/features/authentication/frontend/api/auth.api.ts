@@ -27,11 +27,10 @@ export const authApi = {
 
   refreshToken: async (
     data: RefreshTokenRequest,
-  ): Promise<ApiResponse<AuthResponse>> => {
-    const response = await apiClient.instance.post<ApiResponse<AuthResponse>>(
-      '/auth/refresh',
-      data,
-    );
+  ): Promise<ApiResponse<{ accessToken: string }>> => {
+    const response = await apiClient.instance.post<
+      ApiResponse<{ accessToken: string }>
+    >('/auth/refresh', data);
     return response.data;
   },
 

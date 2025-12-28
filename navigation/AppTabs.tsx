@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { HomeReportsScreen } from '../docs/mhp/features/reports/frontend';
+import { AddTransactionScreen } from '../docs/mhp/features/add-transaction/frontend';
 import { colors } from '../shared/theme/colors';
 import { typography } from '../shared/theme/typography';
 import { spacing } from '../shared/theme/spacing';
@@ -24,13 +25,6 @@ function VehiclesPlaceholder() {
   );
 }
 
-function AddPlaceholder() {
-  return (
-    <View style={styles.placeholder}>
-      <Text style={styles.placeholderText}>Add</Text>
-    </View>
-  );
-}
 
 function ProfilePlaceholder() {
   return (
@@ -73,7 +67,7 @@ export function AppTabs() {
       />
       <Tab.Screen
         name="Add"
-        component={AddPlaceholder}
+        component={AddTransactionScreen}
         options={{
           tabBarLabel: 'Adicionar',
           tabBarIcon: ({ color, size }) => (

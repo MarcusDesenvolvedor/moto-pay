@@ -8,6 +8,8 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findByToken(token: string): Promise<RefreshToken | null> {
+    // Legacy method - kept for backward compatibility
+    // Note: This won't work with hashed tokens, use findByTokenHash instead
     const refreshToken = await this.prisma.refreshToken.findUnique({
       where: { token },
     });
@@ -17,6 +19,32 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
     }
 
     return this.toDomain(refreshToken);
+  }
+
+  async findByTokenHash(tokenHash: string): Promise<RefreshToken | null> {
+    // Find token by hashed value
+    const refreshToken = await this.prisma.refreshToken.findFirst({
+      where: { token: tokenHash },
+    });
+
+    if (!refreshToken) {
+      return null;
+    }
+
+    return this.toDomain(refreshToken);
+  }
+
+  async findAllActive(): Promise<RefreshToken[]> {
+    const tokens = await this.prisma.refreshToken.findMany({
+      where: {
+        revoked: false,
+        expiresAt: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    return tokens.map((token: any) => this.toDomain(token));
   }
 
   async findByUserId(userId: string): Promise<RefreshToken[]> {
@@ -48,9 +76,10 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
     return this.toDomain(saved);
   }
 
-  async revokeToken(token: string): Promise<void> {
+  async revokeToken(tokenHash: string): Promise<void> {
+    // Revoke by token hash
     await this.prisma.refreshToken.updateMany({
-      where: { token, revoked: false },
+      where: { token: tokenHash, revoked: false },
       data: { revoked: true },
     });
   }

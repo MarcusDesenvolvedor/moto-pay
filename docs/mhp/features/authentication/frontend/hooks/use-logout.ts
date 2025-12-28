@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { authApi } from '../api/auth.api';
-import { getRefreshToken, clearTokens } from '../../../../../../shared/storage/token-storage';
+import { getRefreshToken } from '../../../../../../shared/storage/token-storage';
 import { useAuthStore } from '../store/auth.store';
 
 export function useLogout() {
@@ -16,8 +16,8 @@ export function useLogout() {
           console.error('Logout error:', error);
         }
       }
-      await clearTokens();
-      clearAuth();
+      // clearAuth already clears tokens from secure storage
+      await clearAuth();
     },
   });
 }
