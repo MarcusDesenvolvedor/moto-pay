@@ -5,7 +5,6 @@ import { useAuthStore } from './docs/mhp/features/authentication/frontend/store/
 import { AuthNavigator } from './navigation/AuthNavigator';
 import { AppNavigator } from './navigation/AppNavigator';
 import { Loading } from './shared/components/Loading';
-import { getToken } from './shared/storage/token-storage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,16 +17,13 @@ const queryClient = new QueryClient({
 
 export default function App() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const setToken = useAuthStore((state) => state.setToken);
+  const initialize = useAuthStore((state) => state.initialize);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const token = await getToken();
-        if (token) {
-          setToken(token);
-        }
+        await initialize();
       } catch (error) {
         console.error('Error loading auth state:', error);
       } finally {
@@ -36,7 +32,7 @@ export default function App() {
     };
 
     initializeAuth();
-  }, [setToken]);
+  }, [initialize]);
 
   if (!isReady) {
     return <Loading />;

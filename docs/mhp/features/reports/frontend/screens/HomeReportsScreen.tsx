@@ -91,6 +91,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: spacing.lg,
+    paddingTop: spacing.xl + spacing.md,
   },
   loadingContainer: {
     flex: 1,

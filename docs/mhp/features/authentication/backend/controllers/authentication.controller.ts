@@ -12,6 +12,7 @@ import { SignupDto } from '../dto/signup.dto';
 import { LoginDto } from '../dto/login.dto';
 import { RefreshTokenDto } from '../dto/refresh-token.dto';
 import { AuthResponseDto } from '../dto/auth-response.dto';
+import { RefreshResponseDto } from '../dto/refresh-response.dto';
 import { UserResponseDto } from '../dto/user-response.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser, CurrentUserPayload } from '../decorators/current-user.decorator';
@@ -40,7 +41,7 @@ export class AuthenticationController {
   @HttpCode(HttpStatus.OK)
   async refresh(
     @Body() refreshTokenDto: RefreshTokenDto,
-  ): Promise<{ data: AuthResponseDto }> {
+  ): Promise<{ data: RefreshResponseDto }> {
     const result = await this.authenticationService.refreshToken(
       refreshTokenDto.refreshToken,
     );

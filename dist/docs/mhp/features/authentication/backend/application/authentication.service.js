@@ -103,27 +103,36 @@ let AuthenticationService = class AuthenticationService {
         };
     }
     async refreshToken(refreshToken) {
-        const tokenEntity = await this.refreshTokenRepository.findByToken(refreshToken);
-        if (!tokenEntity || !tokenEntity.isValid()) {
+        const allTokens = await this.refreshTokenRepository.findAllActive();
+        let tokenEntity = null;
+        for (const storedToken of allTokens) {
+            const isValid = await bcrypt.compare(refreshToken, storedToken.token);
+            if (isValid && storedToken.isValid()) {
+                tokenEntity = storedToken;
+                break;
+            }
+        }
+        if (!tokenEntity) {
             throw new common_1.UnauthorizedException('Invalid or expired refresh token');
         }
         const user = await this.userRepository.findById(tokenEntity.userId);
         if (!user || !user.canAuthenticate()) {
             throw new common_1.UnauthorizedException('User not found or inactive');
         }
-        const tokens = await this.generateTokens(user);
+        const accessToken = await this.generateAccessToken(user);
         return {
-            accessToken: tokens.accessToken,
-            refreshToken: tokens.refreshToken,
-            user: {
-                id: user.id,
-                email: user.email,
-                fullName: user.fullName,
-            },
+            accessToken,
         };
     }
     async logout(refreshToken) {
-        await this.refreshTokenRepository.revokeToken(refreshToken);
+        const allTokens = await this.refreshTokenRepository.findAllActive();
+        for (const storedToken of allTokens) {
+            const isValid = await bcrypt.compare(refreshToken, storedToken.token);
+            if (isValid) {
+                await this.refreshTokenRepository.revokeToken(storedToken.token);
+                return;
+            }
+        }
     }
     async getCurrentUser(userId) {
         const user = await this.userRepository.findById(userId);
@@ -146,23 +155,32 @@ let AuthenticationService = class AuthenticationService {
         return bcrypt.compare(password, hash);
     }
     async generateTokens(user) {
-        const payload = {
-            sub: user.id,
-            email: user.email,
-        };
-        const accessTokenExpiresIn = this.configService.get('JWT_ACCESS_EXPIRES_IN', '15m') || '15m';
-        const accessToken = await this.jwtService.signAsync(payload, {
-            expiresIn: accessTokenExpiresIn,
-        });
+        const accessToken = await this.generateAccessToken(user);
         const refreshTokenValue = this.generateRandomToken();
+        const refreshTokenHash = await this.hashRefreshToken(refreshTokenValue);
         const expiresAt = new Date();
-        expiresAt.setDate(expiresAt.getDate() + 7);
-        const refreshTokenEntity = refresh_token_entity_1.RefreshToken.create(user.id, refreshTokenValue, expiresAt);
+        const refreshTokenDays = this.configService.get('JWT_REFRESH_EXPIRES_DAYS', 30) || 30;
+        expiresAt.setDate(expiresAt.getDate() + refreshTokenDays);
+        const refreshTokenEntity = refresh_token_entity_1.RefreshToken.create(user.id, refreshTokenHash, expiresAt);
         await this.refreshTokenRepository.save(refreshTokenEntity);
         return {
             accessToken,
             refreshToken: refreshTokenValue,
         };
+    }
+    async generateAccessToken(user) {
+        const payload = {
+            sub: user.id,
+            email: user.email,
+        };
+        const accessTokenExpiresIn = this.configService.get('JWT_ACCESS_EXPIRES_IN', '15m') || '15m';
+        return await this.jwtService.signAsync(payload, {
+            expiresIn: accessTokenExpiresIn,
+        });
+    }
+    async hashRefreshToken(token) {
+        const saltRounds = 10;
+        return bcrypt.hash(token, saltRounds);
     }
     generateRandomToken() {
         return (0, crypto_1.randomUUID)() + '-' + (0, crypto_1.randomUUID)();

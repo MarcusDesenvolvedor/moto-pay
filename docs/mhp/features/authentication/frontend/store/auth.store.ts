@@ -1,58 +1,71 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthResponse } from '../types/auth.types';
+import { saveTokens, clearTokens, getToken, getRefreshToken } from '../../../../../../shared/storage/token-storage';
 
 interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
   user: AuthResponse['user'] | null;
   isAuthenticated: boolean;
-  setAuth: (authData: AuthResponse) => void;
-  clearAuth: () => void;
-  setToken: (token: string) => void;
+  setAuth: (authData: AuthResponse) => Promise<void>;
+  clearAuth: () => Promise<void>;
+  setToken: (token: string) => Promise<void>;
+  initialize: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
+  accessToken: null,
+  refreshToken: null,
+  user: null,
+  isAuthenticated: false,
+  
+  setAuth: async (authData: AuthResponse) => {
+    // Save tokens to secure storage
+    await saveTokens(authData.accessToken, authData.refreshToken);
+    
+    set({
+      accessToken: authData.accessToken,
+      refreshToken: authData.refreshToken,
+      user: authData.user,
+      isAuthenticated: true,
+    });
+  },
+  
+  clearAuth: async () => {
+    // Clear tokens from secure storage
+    await clearTokens();
+    
+    set({
       accessToken: null,
       refreshToken: null,
       user: null,
       isAuthenticated: false,
-      setAuth: (authData: AuthResponse) => {
-        set({
-          accessToken: authData.accessToken,
-          refreshToken: authData.refreshToken,
-          user: authData.user,
-          isAuthenticated: true,
-        });
-      },
-      clearAuth: () => {
-        set({
-          accessToken: null,
-          refreshToken: null,
-          user: null,
-          isAuthenticated: false,
-        });
-      },
-      setToken: (token: string) => {
-        set({
-          accessToken: token,
-          isAuthenticated: !!token,
-        });
-      },
-    }),
-    {
-      name: 'auth-storage',
-      storage: createJSONStorage(() => AsyncStorage),
-      partialize: (state) => ({
-        accessToken: state.accessToken,
-        refreshToken: state.refreshToken,
-        user: state.user,
-        isAuthenticated: state.isAuthenticated,
-      }),
-    },
-  ),
-);
+    });
+  },
+  
+  setToken: async (token: string) => {
+    // Update access token in secure storage
+    const { saveAccessToken } = await import('../../../../../../shared/storage/token-storage');
+    await saveAccessToken(token);
+    
+    set({
+      accessToken: token,
+      isAuthenticated: !!token,
+    });
+  },
+  
+  initialize: async () => {
+    // Load tokens from secure storage on app start
+    const accessToken = await getToken();
+    const refreshToken = await getRefreshToken();
+    
+    if (accessToken && refreshToken) {
+      set({
+        accessToken,
+        refreshToken,
+        isAuthenticated: true,
+      });
+    }
+  },
+}));
 

@@ -3,6 +3,7 @@ import { SignupDto } from '../dto/signup.dto';
 import { LoginDto } from '../dto/login.dto';
 import { RefreshTokenDto } from '../dto/refresh-token.dto';
 import { AuthResponseDto } from '../dto/auth-response.dto';
+import { RefreshResponseDto } from '../dto/refresh-response.dto';
 import { UserResponseDto } from '../dto/user-response.dto';
 import { CurrentUserPayload } from '../decorators/current-user.decorator';
 export declare class AuthenticationController {
@@ -15,7 +16,7 @@ export declare class AuthenticationController {
         data: AuthResponseDto;
     }>;
     refresh(refreshTokenDto: RefreshTokenDto): Promise<{
-        data: AuthResponseDto;
+        data: RefreshResponseDto;
     }>;
     logout(refreshTokenDto: RefreshTokenDto): Promise<{
         data: {

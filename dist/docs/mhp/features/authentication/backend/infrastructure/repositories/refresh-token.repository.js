@@ -26,6 +26,26 @@ let RefreshTokenRepository = class RefreshTokenRepository {
         }
         return this.toDomain(refreshToken);
     }
+    async findByTokenHash(tokenHash) {
+        const refreshToken = await this.prisma.refreshToken.findFirst({
+            where: { token: tokenHash },
+        });
+        if (!refreshToken) {
+            return null;
+        }
+        return this.toDomain(refreshToken);
+    }
+    async findAllActive() {
+        const tokens = await this.prisma.refreshToken.findMany({
+            where: {
+                revoked: false,
+                expiresAt: {
+                    gt: new Date(),
+                },
+            },
+        });
+        return tokens.map((token) => this.toDomain(token));
+    }
     async findByUserId(userId) {
         const tokens = await this.prisma.refreshToken.findMany({
             where: { userId },
@@ -50,9 +70,9 @@ let RefreshTokenRepository = class RefreshTokenRepository {
         });
         return this.toDomain(saved);
     }
-    async revokeToken(token) {
+    async revokeToken(tokenHash) {
         await this.prisma.refreshToken.updateMany({
-            where: { token, revoked: false },
+            where: { token: tokenHash, revoked: false },
             data: { revoked: true },
         });
     }

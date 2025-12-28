@@ -14,11 +14,15 @@ export declare class AuthenticationService {
     constructor(userRepository: IUserRepository, refreshTokenRepository: IRefreshTokenRepository, jwtService: JwtService, configService: ConfigService);
     signup(signupDto: SignupDto): Promise<AuthResponseDto>;
     login(loginDto: LoginDto): Promise<AuthResponseDto>;
-    refreshToken(refreshToken: string): Promise<AuthResponseDto>;
+    refreshToken(refreshToken: string): Promise<{
+        accessToken: string;
+    }>;
     logout(refreshToken: string): Promise<void>;
     getCurrentUser(userId: string): Promise<UserResponseDto>;
     private hashPassword;
     private verifyPassword;
     private generateTokens;
+    private generateAccessToken;
+    private hashRefreshToken;
     private generateRandomToken;
 }
