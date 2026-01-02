@@ -16,6 +16,7 @@ export interface CreateTransactionRequest {
   paid: boolean;
   recordDate?: string;
   note?: string;
+  vehicleId: string;
 }
 
 export interface Transaction {

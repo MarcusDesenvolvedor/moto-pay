@@ -46,6 +46,21 @@ export class TransactionsService {
         throw new NotFoundException('Company not found or deleted');
       }
 
+      // Validate vehicle (required)
+      const vehicle = await this.prisma.vehicle.findFirst({
+        where: {
+          id: createTransactionDto.vehicleId,
+          companyId: createTransactionDto.companyId,
+          deletedAt: null,
+        },
+      });
+
+      if (!vehicle) {
+        throw new NotFoundException(
+          `Vehicle ${createTransactionDto.vehicleId} not found or does not belong to company`,
+        );
+      }
+
       // Create transaction entity
       const transaction = Transaction.create(
         createTransactionDto.companyId,
@@ -54,6 +69,7 @@ export class TransactionsService {
         createTransactionDto.paid,
         createTransactionDto.note,
         createTransactionDto.recordDate,
+        createTransactionDto.vehicleId,
       );
 
       // Save transaction
@@ -100,6 +116,7 @@ export class TransactionsService {
       note: transaction.note || undefined,
       recordDate: transaction.recordDate,
       status: transaction.status,
+      vehicleId: transaction.vehicleId || undefined,
       createdAt: transaction.createdAt,
     };
   }

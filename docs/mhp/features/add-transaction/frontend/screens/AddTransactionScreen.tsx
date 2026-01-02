@@ -17,6 +17,7 @@ import { Button } from '../../../../../../shared/components/Button';
 import { Loading } from '../../../../../../shared/components/Loading';
 import { useCreateTransaction } from '../hooks/use-create-transaction';
 import { useCompanies } from '../hooks/use-companies';
+import { useVehicles, Vehicle } from '../../../vehicles/frontend';
 import { TransactionType, Company, CreateTransactionRequest } from '../types/transaction.types';
 import { colors } from '../../../../../../shared/theme/colors';
 import { typography } from '../../../../../../shared/theme/typography';
@@ -26,17 +27,21 @@ export function AddTransactionScreen() {
   const [type, setType] = useState<TransactionType>(TransactionType.GAIN);
   const [companyId, setCompanyId] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
-  const [paid, setPaid] = useState<boolean>(false);
+  const [paid, setPaid] = useState<boolean>(true);
   const [recordDate, setRecordDate] = useState<string>('');
   const [note, setNote] = useState<string>('');
+  const [vehicleId, setVehicleId] = useState<string>('');
   const [errors, setErrors] = useState<{
     companyId?: string;
     amount?: string;
     recordDate?: string;
+    vehicleId?: string;
   }>({});
   const [showCompanyPicker, setShowCompanyPicker] = useState(false);
+  const [showVehiclePicker, setShowVehiclePicker] = useState(false);
 
   const { data: companies, isLoading: isLoadingCompanies } = useCompanies();
+  const { data: vehicles, isLoading: isLoadingVehicles } = useVehicles();
   const createTransactionMutation = useCreateTransaction();
 
   // Initialize recordDate with today's date in Brazilian format
@@ -121,10 +126,14 @@ export function AddTransactionScreen() {
   };
 
   const validate = (): boolean => {
-    const newErrors: { companyId?: string; amount?: string; recordDate?: string } = {};
+    const newErrors: { companyId?: string; amount?: string; recordDate?: string; vehicleId?: string } = {};
 
     if (!companyId) {
       newErrors.companyId = 'Empresa é obrigatória';
+    }
+
+    if (!vehicleId) {
+      newErrors.vehicleId = 'Veículo é obrigatório';
     }
 
     const numericAmount = getNumericAmount();
@@ -177,6 +186,7 @@ export function AddTransactionScreen() {
         paid,
         recordDate: isoDate,
         note: note.trim() || undefined,
+        vehicleId: vehicleId,
       };
 
       await createTransactionMutation.mutateAsync(transactionData);
@@ -189,9 +199,10 @@ export function AddTransactionScreen() {
       setType(TransactionType.GAIN);
       setCompanyId('');
       setAmount('');
-      setPaid(false);
+      setPaid(true);
       setRecordDate(`${day}/${month}/${year}`);
       setNote('');
+      setVehicleId('');
       setErrors({});
 
       Alert.alert('Sucesso', 'Transação criada com sucesso!');
@@ -210,6 +221,10 @@ export function AddTransactionScreen() {
   };
 
   const selectedCompany = companies?.find((c) => c.id === companyId);
+  const selectedVehicle = vehicles?.find((v) => v.id === vehicleId);
+  
+  // Filter vehicles by selected company
+  const availableVehicles = vehicles?.filter((v) => v.companyId === companyId) || [];
 
   if (isLoadingCompanies) {
     return (
@@ -287,6 +302,7 @@ export function AddTransactionScreen() {
 
           {/* Company Picker */}
           <View style={styles.section}>
+            <Text style={styles.label}>Empresa *</Text>
             <TouchableOpacity
               onPress={() => setShowCompanyPicker(true)}
               style={[
@@ -309,10 +325,37 @@ export function AddTransactionScreen() {
             )}
           </View>
 
+          {/* Vehicle Picker - Only show if company is selected */}
+          {companyId && (
+            <View style={styles.section}>
+              <Text style={styles.label}>Veículo *</Text>
+              <TouchableOpacity
+                onPress={() => setShowVehiclePicker(true)}
+                style={[
+                  styles.pickerButton,
+                  errors.vehicleId && styles.pickerButtonError,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.pickerButtonText,
+                    !selectedVehicle && styles.pickerButtonPlaceholder,
+                  ]}
+                >
+                  {selectedVehicle ? selectedVehicle.name : 'Selecione um veículo'}
+                </Text>
+                <Text style={styles.pickerButtonIcon}>▼</Text>
+              </TouchableOpacity>
+              {errors.vehicleId && (
+                <Text style={styles.errorText}>{errors.vehicleId}</Text>
+              )}
+            </View>
+          )}
+
           {/* Amount Input */}
           <View style={styles.section}>
             <Input
-              label="Valor"
+              label="Valor *"
               value={amount}
               onChangeText={handleAmountChange}
               placeholder="R$ 0,00"
@@ -324,7 +367,7 @@ export function AddTransactionScreen() {
           {/* Date Input */}
           <View style={styles.section}>
             <Input
-              label="Data"
+              label="Data *"
               value={recordDate}
               onChangeText={handleDateChange}
               placeholder="DD/MM/AAAA"
@@ -398,6 +441,7 @@ export function AddTransactionScreen() {
                   style={styles.modalItem}
                   onPress={() => {
                     setCompanyId(item.id);
+                    setVehicleId(''); // Reset vehicle when company changes
                     setShowCompanyPicker(false);
                     if (errors.companyId) {
                       setErrors({ ...errors, companyId: undefined });
@@ -408,6 +452,54 @@ export function AddTransactionScreen() {
                 </TouchableOpacity>
               )}
             />
+          </View>
+        </View>
+      </Modal>
+
+      {/* Vehicle Picker Modal */}
+      <Modal
+        visible={showVehiclePicker}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowVehiclePicker(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Selecione um veículo</Text>
+              <TouchableOpacity
+                onPress={() => setShowVehiclePicker(false)}
+                style={styles.modalCloseButton}
+              >
+                <Text style={styles.modalCloseText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            {availableVehicles.length === 0 ? (
+              <View style={styles.modalItem}>
+                <Text style={[styles.modalItemText, { color: colors.textSecondary }]}>
+                  Nenhum veículo cadastrado para esta empresa
+                </Text>
+              </View>
+            ) : (
+              <FlatList
+                data={availableVehicles}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.modalItem}
+                  onPress={() => {
+                    setVehicleId(item.id);
+                    setShowVehiclePicker(false);
+                  }}
+                >
+                  <Text style={styles.modalItemText}>{item.name}</Text>
+                  {item.plate && (
+                    <Text style={styles.modalItemSubtext}>Placa: {item.plate}</Text>
+                  )}
+                </TouchableOpacity>
+              )}
+              />
+            )}
           </View>
         </View>
       </Modal>
@@ -581,6 +673,11 @@ const styles = StyleSheet.create({
   modalItemText: {
     ...typography.body,
     color: colors.text,
+  },
+  modalItemSubtext: {
+    ...typography.bodySmall,
+    color: colors.textSecondary,
+    marginTop: spacing.xs,
   },
 });
 

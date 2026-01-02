@@ -15,6 +15,7 @@ export class Transaction {
     public readonly note: string | null,
     public readonly recordDate: Date,
     public readonly status: string,
+    public readonly vehicleId: string | null,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
   ) {}
@@ -26,6 +27,7 @@ export class Transaction {
     paid: boolean,
     note?: string,
     recordDate?: string | Date,
+    vehicleId: string,
   ): Transaction {
     const now = new Date();
     let transactionRecordDate: Date;
@@ -51,6 +53,7 @@ export class Transaction {
       note || null,
       transactionRecordDate,
       'ACTIVE',
+      vehicleId,
       now,
       now,
     );
