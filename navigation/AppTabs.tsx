@@ -4,6 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { HomeReportsScreen } from '../docs/mhp/features/reports/frontend';
 import { AddTransactionScreen } from '../docs/mhp/features/add-transaction/frontend';
+import { AddVehicleScreen } from '../docs/mhp/features/vehicles/frontend';
 import { colors } from '../shared/theme/colors';
 import { typography } from '../shared/theme/typography';
 import { spacing } from '../shared/theme/spacing';
@@ -16,15 +17,6 @@ export type AppTabsParamList = {
 };
 
 const Tab = createBottomTabNavigator<AppTabsParamList>();
-
-function VehiclesPlaceholder() {
-  return (
-    <View style={styles.placeholder}>
-      <Text style={styles.placeholderText}>Vehicles</Text>
-    </View>
-  );
-}
-
 
 function ProfilePlaceholder() {
   return (
@@ -57,7 +49,7 @@ export function AppTabs() {
       />
       <Tab.Screen
         name="Vehicles"
-        component={VehiclesPlaceholder}
+        component={AddVehicleScreen}
         options={{
           tabBarLabel: 'Veículos',
           tabBarIcon: ({ color, size }) => (

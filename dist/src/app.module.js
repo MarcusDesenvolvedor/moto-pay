@@ -12,6 +12,7 @@ const config_1 = require("@nestjs/config");
 const authentication_module_1 = require("../docs/mhp/features/authentication/backend/authentication.module");
 const transactions_module_1 = require("../docs/mhp/features/add-transaction/backend/transactions.module");
 const reports_module_1 = require("../docs/mhp/features/reports/backend/reports.module");
+const vehicles_module_1 = require("../docs/mhp/features/vehicles/backend/vehicles.module");
 const prisma_service_1 = require("../shared/infrastructure/prisma/prisma.service");
 let AppModule = class AppModule {
 };
@@ -26,6 +27,7 @@ exports.AppModule = AppModule = __decorate([
             authentication_module_1.AuthenticationModule,
             transactions_module_1.TransactionsModule,
             reports_module_1.ReportsModule,
+            vehicles_module_1.VehiclesModule,
         ],
         providers: [prisma_service_1.PrismaService],
         exports: [prisma_service_1.PrismaService],

@@ -112,7 +112,7 @@ Fetches all companies the authenticated user belongs to.
 - Black background (#0B0B0F)
 - Yellow primary color (#FBBF24)
 - White text for content
-- Purple border on focused inputs
+- Yellow border on focused inputs
 
 ### Components
 1. **Toggle/Segmented Control**: Switch between "Ganho" and "Despesa"
