@@ -8,7 +8,7 @@ var TransactionType;
     TransactionType["EXPENSE"] = "EXPENSE";
 })(TransactionType || (exports.TransactionType = TransactionType = {}));
 class Transaction {
-    constructor(id, companyId, type, amount, paid, note, recordDate, status, createdAt, updatedAt) {
+    constructor(id, companyId, type, amount, paid, note, recordDate, status, vehicleId, createdAt, updatedAt) {
         this.id = id;
         this.companyId = companyId;
         this.type = type;
@@ -17,10 +17,11 @@ class Transaction {
         this.note = note;
         this.recordDate = recordDate;
         this.status = status;
+        this.vehicleId = vehicleId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-    static create(companyId, type, amount, paid, note, recordDate) {
+    static create(companyId, type, amount, paid, note, recordDate, vehicleId) {
         const now = new Date();
         let transactionRecordDate;
         if (recordDate) {
@@ -36,7 +37,7 @@ class Transaction {
             transactionRecordDate = new Date();
             transactionRecordDate.setHours(0, 0, 0, 0);
         }
-        return new Transaction((0, crypto_1.randomUUID)(), companyId, type, amount, paid, note || null, transactionRecordDate, 'ACTIVE', now, now);
+        return new Transaction((0, crypto_1.randomUUID)(), companyId, type, amount, paid, note || null, transactionRecordDate, 'ACTIVE', vehicleId, now, now);
     }
     isActive() {
         return this.status === 'ACTIVE';

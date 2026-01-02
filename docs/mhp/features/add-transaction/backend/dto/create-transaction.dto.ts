@@ -30,5 +30,9 @@ export class CreateTransactionDto {
   @IsString({ message: 'Note must be a string' })
   @IsOptional()
   note?: string;
+
+  @IsUUID('4', { message: 'Vehicle ID must be a valid UUID' })
+  @IsNotEmpty({ message: 'Vehicle ID is required' })
+  vehicleId: string;
 }
 

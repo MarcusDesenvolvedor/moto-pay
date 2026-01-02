@@ -28,6 +28,7 @@ let TransactionRepository = class TransactionRepository {
                 data: {
                     id: transaction.id,
                     companyId: transaction.companyId,
+                    vehicleId: transaction.vehicleId,
                     type: financialRecordType,
                     category: category,
                     amount: transaction.amount,
@@ -48,7 +49,7 @@ let TransactionRepository = class TransactionRepository {
     }
     toDomain(prismaRecord) {
         const transactionType = prismaRecord.type === 'income' ? transaction_entity_1.TransactionType.GAIN : transaction_entity_1.TransactionType.EXPENSE;
-        return new transaction_entity_1.Transaction(prismaRecord.id, prismaRecord.companyId, transactionType, Number(prismaRecord.amount), prismaRecord.paid, prismaRecord.description, prismaRecord.recordDate, prismaRecord.status, prismaRecord.createdAt, prismaRecord.updatedAt);
+        return new transaction_entity_1.Transaction(prismaRecord.id, prismaRecord.companyId, transactionType, Number(prismaRecord.amount), prismaRecord.paid, prismaRecord.description, prismaRecord.recordDate, prismaRecord.status, prismaRecord.vehicleId, prismaRecord.createdAt, prismaRecord.updatedAt);
     }
 };
 exports.TransactionRepository = TransactionRepository;

@@ -7,5 +7,6 @@ export declare class TransactionResponseDto {
     note?: string;
     recordDate: Date;
     status: string;
+    vehicleId?: string;
     createdAt: Date;
 }

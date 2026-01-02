@@ -9,4 +9,5 @@ export declare class CreateTransactionDto {
     paid: boolean;
     recordDate?: string;
     note?: string;
+    vehicleId: string;
 }

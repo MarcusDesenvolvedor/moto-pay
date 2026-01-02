@@ -24,6 +24,7 @@ export class TransactionRepository implements ITransactionRepository {
         data: {
           id: transaction.id,
           companyId: transaction.companyId,
+          vehicleId: transaction.vehicleId,
           type: financialRecordType,
           category: category,
           amount: transaction.amount,
@@ -46,6 +47,7 @@ export class TransactionRepository implements ITransactionRepository {
   private toDomain(prismaRecord: {
     id: string;
     companyId: string;
+    vehicleId: string | null;
     type: string;
     amount: any; // Decimal from Prisma
     description: string | null;
@@ -67,6 +69,7 @@ export class TransactionRepository implements ITransactionRepository {
       prismaRecord.description,
       prismaRecord.recordDate,
       prismaRecord.status,
+      prismaRecord.vehicleId,
       prismaRecord.createdAt,
       prismaRecord.updatedAt,
     );

@@ -38,7 +38,17 @@ let TransactionsService = class TransactionsService {
             if (companyUser.company.deletedAt) {
                 throw new common_1.NotFoundException('Company not found or deleted');
             }
-            const transaction = transaction_entity_1.Transaction.create(createTransactionDto.companyId, createTransactionDto.type, createTransactionDto.amount, createTransactionDto.paid, createTransactionDto.note, createTransactionDto.recordDate);
+            const vehicle = await this.prisma.vehicle.findFirst({
+                where: {
+                    id: createTransactionDto.vehicleId,
+                    companyId: createTransactionDto.companyId,
+                    deletedAt: null,
+                },
+            });
+            if (!vehicle) {
+                throw new common_1.NotFoundException(`Vehicle ${createTransactionDto.vehicleId} not found or does not belong to company`);
+            }
+            const transaction = transaction_entity_1.Transaction.create(createTransactionDto.companyId, createTransactionDto.type, createTransactionDto.amount, createTransactionDto.paid, createTransactionDto.note, createTransactionDto.recordDate, createTransactionDto.vehicleId);
             const savedTransaction = await this.transactionRepository.save(transaction);
             return this.toResponseDto(savedTransaction);
         }
@@ -78,6 +88,7 @@ let TransactionsService = class TransactionsService {
             note: transaction.note || undefined,
             recordDate: transaction.recordDate,
             status: transaction.status,
+            vehicleId: transaction.vehicleId || undefined,
             createdAt: transaction.createdAt,
         };
     }
