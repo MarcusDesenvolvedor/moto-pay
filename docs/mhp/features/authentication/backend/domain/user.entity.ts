@@ -6,6 +6,7 @@ export class User {
     public readonly email: string,
     public readonly passwordHash: string,
     public readonly fullName: string,
+    public readonly avatarUrl: string | null,
     public readonly isActive: boolean,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
@@ -23,6 +24,7 @@ export class User {
       email.toLowerCase().trim(),
       passwordHash,
       fullName.trim(),
+      null,
       true,
       now,
       now,
@@ -40,6 +42,35 @@ export class User {
       this.email,
       this.passwordHash,
       fullName.trim(),
+      this.avatarUrl,
+      this.isActive,
+      this.createdAt,
+      new Date(),
+      this.deletedAt,
+    );
+  }
+
+  updateAvatar(avatarUrl: string | null): User {
+    return new User(
+      this.id,
+      this.email,
+      this.passwordHash,
+      this.fullName,
+      avatarUrl,
+      this.isActive,
+      this.createdAt,
+      new Date(),
+      this.deletedAt,
+    );
+  }
+
+  updatePassword(newPasswordHash: string): User {
+    return new User(
+      this.id,
+      this.email,
+      newPasswordHash,
+      this.fullName,
+      this.avatarUrl,
       this.isActive,
       this.createdAt,
       new Date(),
@@ -53,6 +84,7 @@ export class User {
       this.email,
       this.passwordHash,
       this.fullName,
+      this.avatarUrl,
       false,
       this.createdAt,
       new Date(),

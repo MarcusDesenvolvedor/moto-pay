@@ -48,7 +48,7 @@ let TransactionsService = class TransactionsService {
             if (!vehicle) {
                 throw new common_1.NotFoundException(`Vehicle ${createTransactionDto.vehicleId} not found or does not belong to company`);
             }
-            const transaction = transaction_entity_1.Transaction.create(createTransactionDto.companyId, createTransactionDto.type, createTransactionDto.amount, createTransactionDto.paid, createTransactionDto.note, createTransactionDto.recordDate, createTransactionDto.vehicleId);
+            const transaction = transaction_entity_1.Transaction.create(createTransactionDto.companyId, createTransactionDto.type, createTransactionDto.amount, createTransactionDto.paid, createTransactionDto.vehicleId, createTransactionDto.note, createTransactionDto.recordDate);
             const savedTransaction = await this.transactionRepository.save(transaction);
             return this.toResponseDto(savedTransaction);
         }

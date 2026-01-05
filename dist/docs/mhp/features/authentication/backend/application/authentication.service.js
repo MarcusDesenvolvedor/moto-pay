@@ -53,12 +53,14 @@ const config_1 = require("@nestjs/config");
 const crypto_1 = require("crypto");
 const user_entity_1 = require("../domain/user.entity");
 const refresh_token_entity_1 = require("../domain/refresh-token.entity");
+const cloudinary_service_1 = require("../../../../../../shared/infrastructure/cloudinary/cloudinary.service");
 let AuthenticationService = class AuthenticationService {
-    constructor(userRepository, refreshTokenRepository, jwtService, configService) {
+    constructor(userRepository, refreshTokenRepository, jwtService, configService, cloudinaryService) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.jwtService = jwtService;
         this.configService = configService;
+        this.cloudinaryService = cloudinaryService;
     }
     async signup(signupDto) {
         const emailExists = await this.userRepository.emailExists(signupDto.email);
@@ -143,9 +145,117 @@ let AuthenticationService = class AuthenticationService {
             id: user.id,
             email: user.email,
             fullName: user.fullName,
+            avatarUrl: user.avatarUrl,
             isActive: user.isActive,
             createdAt: user.createdAt,
         };
+    }
+    async updateProfile(userId, updateUserDto) {
+        const user = await this.userRepository.findById(userId);
+        if (!user || !user.canAuthenticate()) {
+            throw new common_1.UnauthorizedException('User not found or inactive');
+        }
+        const updatedUser = user.updateFullName(updateUserDto.fullName);
+        const savedUser = await this.userRepository.save(updatedUser);
+        return {
+            id: savedUser.id,
+            email: savedUser.email,
+            fullName: savedUser.fullName,
+            avatarUrl: savedUser.avatarUrl,
+            isActive: savedUser.isActive,
+            createdAt: savedUser.createdAt,
+        };
+    }
+    async uploadAvatar(userId, imageBase64) {
+        const user = await this.userRepository.findById(userId);
+        if (!user || !user.canAuthenticate()) {
+            throw new common_1.UnauthorizedException('User not found or inactive');
+        }
+        try {
+            const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
+            const imageBuffer = Buffer.from(base64Data, 'base64');
+            const publicId = `avatar_${userId}`;
+            const avatarUrl = await this.cloudinaryService.uploadImage(imageBuffer, 'avatars', publicId);
+            if (user.avatarUrl) {
+                const oldPublicId = this.cloudinaryService.extractPublicIdFromUrl(user.avatarUrl);
+                if (oldPublicId) {
+                    await this.cloudinaryService.deleteImage(oldPublicId);
+                }
+            }
+            const updatedUser = user.updateAvatar(avatarUrl);
+            const savedUser = await this.userRepository.save(updatedUser);
+            return {
+                id: savedUser.id,
+                email: savedUser.email,
+                fullName: savedUser.fullName,
+                avatarUrl: savedUser.avatarUrl,
+                isActive: savedUser.isActive,
+                createdAt: savedUser.createdAt,
+            };
+        }
+        catch (error) {
+            console.error('Error uploading avatar:', error);
+            throw new Error('Failed to upload avatar');
+        }
+    }
+    async updatePassword(userId, updatePasswordDto) {
+        const user = await this.userRepository.findById(userId);
+        if (!user || !user.canAuthenticate()) {
+            throw new common_1.UnauthorizedException('User not found or inactive');
+        }
+        const isCurrentPasswordValid = await this.verifyPassword(updatePasswordDto.currentPassword, user.passwordHash);
+        if (!isCurrentPasswordValid) {
+            throw new common_1.UnauthorizedException('Current password is incorrect');
+        }
+        const newPasswordHash = await this.hashPassword(updatePasswordDto.newPassword);
+        const updatedUser = user.updatePassword(newPasswordHash);
+        await this.userRepository.save(updatedUser);
+        return { message: 'Password updated successfully' };
+    }
+    async changePassword(userId, changePasswordDto) {
+        const user = await this.userRepository.findById(userId);
+        if (!user || !user.canAuthenticate()) {
+            throw new common_1.UnauthorizedException('User not found or inactive');
+        }
+        const isCurrentPasswordValid = await this.verifyPassword(changePasswordDto.currentPassword, user.passwordHash);
+        if (!isCurrentPasswordValid) {
+            throw new common_1.UnauthorizedException('Current password is incorrect');
+        }
+        const newPasswordHash = await this.hashPassword(changePasswordDto.newPassword);
+        const updatedUser = user.updatePassword(newPasswordHash);
+        await this.userRepository.save(updatedUser);
+        await this.refreshTokenRepository.revokeAllUserTokens(userId);
+        return { message: 'Password changed successfully. Please login again.' };
+    }
+    async getUserSessions(userId, currentTokenHash) {
+        const tokens = await this.refreshTokenRepository.findByUserId(userId);
+        const activeTokens = tokens.filter((token) => token.isValid());
+        return activeTokens.map((token) => {
+            const platform = 'mobile';
+            return {
+                id: token.id,
+                platform,
+                lastActivity: token.createdAt.toISOString(),
+                isCurrent: currentTokenHash ? token.token === currentTokenHash : false,
+            };
+        });
+    }
+    async logoutSession(userId, sessionId) {
+        const tokens = await this.refreshTokenRepository.findByUserId(userId);
+        const token = tokens.find((t) => t.id === sessionId);
+        if (!token) {
+            throw new common_1.NotFoundException('Session not found');
+        }
+        if (!token.isValid()) {
+            throw new common_1.NotFoundException('Session already expired or revoked');
+        }
+        const revokedToken = token.revoke();
+        await this.refreshTokenRepository.save(revokedToken);
+        return { message: 'Session logged out successfully' };
+    }
+    async logoutAllSessions(userId) {
+        await this.refreshTokenRepository.revokeAllUserTokens(userId);
+        return { message: 'All sessions logged out successfully' };
     }
     async hashPassword(password) {
         const saltRounds = 10;
@@ -192,6 +302,7 @@ exports.AuthenticationService = AuthenticationService = __decorate([
     __param(0, (0, common_1.Inject)('IUserRepository')),
     __param(1, (0, common_1.Inject)('IRefreshTokenRepository')),
     __metadata("design:paramtypes", [Object, Object, jwt_1.JwtService,
-        config_1.ConfigService])
+        config_1.ConfigService,
+        cloudinary_service_1.CloudinaryService])
 ], AuthenticationService);
 //# sourceMappingURL=authentication.service.js.map

@@ -8,5 +8,8 @@ export declare class VehiclesService {
     constructor(vehicleRepository: IVehicleRepository, prisma: PrismaService);
     createVehicle(userId: string, createVehicleDto: CreateVehicleDto): Promise<VehicleResponseDto>;
     getUserVehicles(userId: string): Promise<VehicleResponseDto[]>;
+    deleteVehicle(userId: string, vehicleId: string): Promise<{
+        message: string;
+    }>;
     private toResponseDto;
 }

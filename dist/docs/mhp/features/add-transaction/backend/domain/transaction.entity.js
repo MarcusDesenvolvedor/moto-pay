@@ -21,7 +21,7 @@ class Transaction {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-    static create(companyId, type, amount, paid, note, recordDate, vehicleId) {
+    static create(companyId, type, amount, paid, vehicleId, note, recordDate) {
         const now = new Date();
         let transactionRecordDate;
         if (recordDate) {

@@ -11,6 +11,7 @@ export class Vehicle {
     public readonly isActive: boolean,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
+    public readonly deletedAt: Date | null,
   ) {}
 
   static create(
@@ -31,11 +32,28 @@ export class Vehicle {
       true, // Default to active
       now,
       now,
+      null, // deletedAt
     );
   }
 
   getIsActive(): boolean {
     return this.isActive;
+  }
+
+  delete(): Vehicle {
+    const now = new Date();
+    return new Vehicle(
+      this.id,
+      this.companyId,
+      this.name,
+      this.plate,
+      this.note,
+      this.type,
+      this.isActive,
+      this.createdAt,
+      now, // Update updatedAt
+      now, // Set deletedAt
+    );
   }
 }
 

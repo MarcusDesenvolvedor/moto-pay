@@ -3,11 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const crypto_1 = require("crypto");
 class User {
-    constructor(id, email, passwordHash, fullName, isActive, createdAt, updatedAt, deletedAt) {
+    constructor(id, email, passwordHash, fullName, avatarUrl, isActive, createdAt, updatedAt, deletedAt) {
         this.id = id;
         this.email = email;
         this.passwordHash = passwordHash;
         this.fullName = fullName;
+        this.avatarUrl = avatarUrl;
         this.isActive = isActive;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -15,16 +16,22 @@ class User {
     }
     static create(email, passwordHash, fullName) {
         const now = new Date();
-        return new User((0, crypto_1.randomUUID)(), email.toLowerCase().trim(), passwordHash, fullName.trim(), true, now, now, null);
+        return new User((0, crypto_1.randomUUID)(), email.toLowerCase().trim(), passwordHash, fullName.trim(), null, true, now, now, null);
     }
     canAuthenticate() {
         return this.isActive && this.deletedAt === null;
     }
     updateFullName(fullName) {
-        return new User(this.id, this.email, this.passwordHash, fullName.trim(), this.isActive, this.createdAt, new Date(), this.deletedAt);
+        return new User(this.id, this.email, this.passwordHash, fullName.trim(), this.avatarUrl, this.isActive, this.createdAt, new Date(), this.deletedAt);
+    }
+    updateAvatar(avatarUrl) {
+        return new User(this.id, this.email, this.passwordHash, this.fullName, avatarUrl, this.isActive, this.createdAt, new Date(), this.deletedAt);
+    }
+    updatePassword(newPasswordHash) {
+        return new User(this.id, this.email, newPasswordHash, this.fullName, this.avatarUrl, this.isActive, this.createdAt, new Date(), this.deletedAt);
     }
     deactivate() {
-        return new User(this.id, this.email, this.passwordHash, this.fullName, false, this.createdAt, new Date(), this.deletedAt);
+        return new User(this.id, this.email, this.passwordHash, this.fullName, this.avatarUrl, false, this.createdAt, new Date(), this.deletedAt);
     }
 }
 exports.User = User;

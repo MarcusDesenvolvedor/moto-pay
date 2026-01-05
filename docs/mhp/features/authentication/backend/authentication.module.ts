@@ -8,6 +8,7 @@ import { UserRepository } from './infrastructure/repositories/user.repository';
 import { RefreshTokenRepository } from './infrastructure/repositories/refresh-token.repository';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { PrismaService } from '@/shared/infrastructure/prisma/prisma.service';
+import { CloudinaryService } from '@/shared/infrastructure/cloudinary/cloudinary.service';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { PrismaService } from '@/shared/infrastructure/prisma/prisma.service';
     RefreshTokenRepository,
     JwtStrategy,
     PrismaService,
+    CloudinaryService,
     {
       provide: 'IUserRepository',
       useClass: UserRepository,

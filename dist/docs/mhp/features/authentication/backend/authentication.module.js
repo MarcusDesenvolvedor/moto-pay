@@ -17,6 +17,7 @@ const user_repository_1 = require("./infrastructure/repositories/user.repository
 const refresh_token_repository_1 = require("./infrastructure/repositories/refresh-token.repository");
 const jwt_strategy_1 = require("./strategies/jwt.strategy");
 const prisma_service_1 = require("../../../../../shared/infrastructure/prisma/prisma.service");
+const cloudinary_service_1 = require("../../../../../shared/infrastructure/cloudinary/cloudinary.service");
 let AuthenticationModule = class AuthenticationModule {
 };
 exports.AuthenticationModule = AuthenticationModule;
@@ -48,6 +49,7 @@ exports.AuthenticationModule = AuthenticationModule = __decorate([
             refresh_token_repository_1.RefreshTokenRepository,
             jwt_strategy_1.JwtStrategy,
             prisma_service_1.PrismaService,
+            cloudinary_service_1.CloudinaryService,
             {
                 provide: 'IUserRepository',
                 useClass: user_repository_1.UserRepository,

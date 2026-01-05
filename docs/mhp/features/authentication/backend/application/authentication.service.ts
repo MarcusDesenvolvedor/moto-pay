@@ -3,6 +3,7 @@ import {
   Injectable,
   Inject,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -14,8 +15,13 @@ import { IUserRepository } from '../domain/user.repository.interface';
 import { IRefreshTokenRepository } from '../domain/refresh-token.repository.interface';
 import { SignupDto } from '../dto/signup.dto';
 import { LoginDto } from '../dto/login.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { UpdatePasswordDto } from '../dto/update-password.dto';
+import { ChangePasswordDto } from '../../../security/backend/dto/change-password.dto';
+import { SessionResponseDto } from '../../../security/backend/dto/session-response.dto';
 import { AuthResponseDto } from '../dto/auth-response.dto';
 import { UserResponseDto } from '../dto/user-response.dto';
+import { CloudinaryService } from '@/shared/infrastructure/cloudinary/cloudinary.service';
 
 @Injectable()
 export class AuthenticationService {
@@ -26,6 +32,7 @@ export class AuthenticationService {
     private readonly refreshTokenRepository: IRefreshTokenRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async signup(signupDto: SignupDto): Promise<AuthResponseDto> {
@@ -151,9 +158,199 @@ export class AuthenticationService {
       id: user.id,
       email: user.email,
       fullName: user.fullName,
+      avatarUrl: user.avatarUrl,
       isActive: user.isActive,
       createdAt: user.createdAt,
     };
+  }
+
+  async updateProfile(
+    userId: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
+    const user = await this.userRepository.findById(userId);
+
+    if (!user || !user.canAuthenticate()) {
+      throw new UnauthorizedException('User not found or inactive');
+    }
+
+    // Update user name
+    const updatedUser = user.updateFullName(updateUserDto.fullName);
+
+    // Save updated user
+    const savedUser = await this.userRepository.save(updatedUser);
+
+    return {
+      id: savedUser.id,
+      email: savedUser.email,
+      fullName: savedUser.fullName,
+      avatarUrl: savedUser.avatarUrl,
+      isActive: savedUser.isActive,
+      createdAt: savedUser.createdAt,
+    };
+  }
+
+  async uploadAvatar(
+    userId: string,
+    imageBase64: string,
+  ): Promise<UserResponseDto> {
+    const user = await this.userRepository.findById(userId);
+
+    if (!user || !user.canAuthenticate()) {
+      throw new UnauthorizedException('User not found or inactive');
+    }
+
+    try {
+      // Convert base64 to buffer
+      const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
+      const imageBuffer = Buffer.from(base64Data, 'base64');
+
+      // Upload to Cloudinary
+      const publicId = `avatar_${userId}`;
+      const avatarUrl = await this.cloudinaryService.uploadImage(
+        imageBuffer,
+        'avatars',
+        publicId,
+      );
+
+      // Delete old avatar if exists
+      if (user.avatarUrl) {
+        const oldPublicId = this.cloudinaryService.extractPublicIdFromUrl(
+          user.avatarUrl,
+        );
+        if (oldPublicId) {
+          await this.cloudinaryService.deleteImage(oldPublicId);
+        }
+      }
+
+      // Update user with new avatar URL
+      const updatedUser = user.updateAvatar(avatarUrl);
+      const savedUser = await this.userRepository.save(updatedUser);
+
+      return {
+        id: savedUser.id,
+        email: savedUser.email,
+        fullName: savedUser.fullName,
+        avatarUrl: savedUser.avatarUrl,
+        isActive: savedUser.isActive,
+        createdAt: savedUser.createdAt,
+      };
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      throw new Error('Failed to upload avatar');
+    }
+  }
+
+  async updatePassword(
+    userId: string,
+    updatePasswordDto: UpdatePasswordDto,
+  ): Promise<{ message: string }> {
+    const user = await this.userRepository.findById(userId);
+
+    if (!user || !user.canAuthenticate()) {
+      throw new UnauthorizedException('User not found or inactive');
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await this.verifyPassword(
+      updatePasswordDto.currentPassword,
+      user.passwordHash,
+    );
+
+    if (!isCurrentPasswordValid) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+
+    // Hash new password
+    const newPasswordHash = await this.hashPassword(updatePasswordDto.newPassword);
+
+    // Update user password
+    const updatedUser = user.updatePassword(newPasswordHash);
+
+    // Save updated user
+    await this.userRepository.save(updatedUser);
+
+    return { message: 'Password updated successfully' };
+  }
+
+  async changePassword(
+    userId: string,
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<{ message: string }> {
+    const user = await this.userRepository.findById(userId);
+
+    if (!user || !user.canAuthenticate()) {
+      throw new UnauthorizedException('User not found or inactive');
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await this.verifyPassword(
+      changePasswordDto.currentPassword,
+      user.passwordHash,
+    );
+
+    if (!isCurrentPasswordValid) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+
+    // Hash new password
+    const newPasswordHash = await this.hashPassword(changePasswordDto.newPassword);
+
+    // Update user password
+    const updatedUser = user.updatePassword(newPasswordHash);
+    await this.userRepository.save(updatedUser);
+
+    // Invalidate all refresh tokens (security best practice)
+    await this.refreshTokenRepository.revokeAllUserTokens(userId);
+
+    return { message: 'Password changed successfully. Please login again.' };
+  }
+
+  async getUserSessions(
+    userId: string,
+    currentTokenHash?: string,
+  ): Promise<SessionResponseDto[]> {
+    const tokens = await this.refreshTokenRepository.findByUserId(userId);
+
+    // Filter only active (non-revoked, non-expired) tokens
+    const activeTokens = tokens.filter((token) => token.isValid());
+
+    // Map to response DTOs
+    return activeTokens.map((token) => {
+      // Determine platform (simplified - can be enhanced with device info)
+      const platform: 'mobile' | 'web' = 'mobile'; // TODO: Extract from token metadata or user agent
+
+      return {
+        id: token.id,
+        platform,
+        lastActivity: token.createdAt.toISOString(), // Use createdAt as lastActivity for now
+        isCurrent: currentTokenHash ? token.token === currentTokenHash : false,
+      };
+    });
+  }
+
+  async logoutSession(userId: string, sessionId: string): Promise<{ message: string }> {
+    const tokens = await this.refreshTokenRepository.findByUserId(userId);
+    const token = tokens.find((t) => t.id === sessionId);
+
+    if (!token) {
+      throw new NotFoundException('Session not found');
+    }
+
+    if (!token.isValid()) {
+      throw new NotFoundException('Session already expired or revoked');
+    }
+
+    // Revoke the token
+    const revokedToken = token.revoke();
+    await this.refreshTokenRepository.save(revokedToken);
+
+    return { message: 'Session logged out successfully' };
+  }
+
+  async logoutAllSessions(userId: string): Promise<{ message: string }> {
+    await this.refreshTokenRepository.revokeAllUserTokens(userId);
+    return { message: 'All sessions logged out successfully' };
   }
 
   private async hashPassword(password: string): Promise<string> {

@@ -30,6 +30,10 @@ let VehiclesController = class VehiclesController {
         const vehicles = await this.vehiclesService.getUserVehicles(user.userId);
         return { data: vehicles };
     }
+    async deleteVehicle(user, vehicleId) {
+        const result = await this.vehiclesService.deleteVehicle(user.userId, vehicleId);
+        return { data: result };
+    }
 };
 exports.VehiclesController = VehiclesController;
 __decorate([
@@ -49,6 +53,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], VehiclesController.prototype, "getUserVehicles", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], VehiclesController.prototype, "deleteVehicle", null);
 exports.VehiclesController = VehiclesController = __decorate([
     (0, common_1.Controller)('vehicles'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),

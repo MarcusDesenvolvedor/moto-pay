@@ -22,5 +22,12 @@ export const vehiclesApi = {
     );
     return response.data;
   },
+
+  deleteVehicle: async (vehicleId: string): Promise<ApiResponse<{ message: string }>> => {
+    const response = await apiClient.instance.delete<ApiResponse<{ message: string }>>(
+      `/vehicles/${vehicleId}`,
+    );
+    return response.data;
+  },
 };
 

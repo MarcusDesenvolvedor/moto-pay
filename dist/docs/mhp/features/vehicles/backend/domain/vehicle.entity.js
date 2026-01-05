@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Vehicle = void 0;
 const crypto_1 = require("crypto");
 class Vehicle {
-    constructor(id, companyId, name, plate, note, type, isActive, createdAt, updatedAt) {
+    constructor(id, companyId, name, plate, note, type, isActive, createdAt, updatedAt, deletedAt) {
         this.id = id;
         this.companyId = companyId;
         this.name = name;
@@ -13,13 +13,18 @@ class Vehicle {
         this.isActive = isActive;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
     }
     static create(companyId, name, plate, note) {
         const now = new Date();
-        return new Vehicle((0, crypto_1.randomUUID)(), companyId, name, plate || null, note || null, 'motorcycle', true, now, now);
+        return new Vehicle((0, crypto_1.randomUUID)(), companyId, name, plate || null, note || null, 'motorcycle', true, now, now, null);
     }
     getIsActive() {
         return this.isActive;
+    }
+    delete() {
+        const now = new Date();
+        return new Vehicle(this.id, this.companyId, this.name, this.plate, this.note, this.type, this.isActive, this.createdAt, now, now);
     }
 }
 exports.Vehicle = Vehicle;

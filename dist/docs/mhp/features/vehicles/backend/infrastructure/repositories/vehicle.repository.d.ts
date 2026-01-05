@@ -5,6 +5,7 @@ export declare class VehicleRepository implements IVehicleRepository {
     private readonly prisma;
     constructor(prisma: PrismaService);
     save(vehicle: Vehicle): Promise<Vehicle>;
+    findById(id: string): Promise<Vehicle | null>;
     findByCompanyId(companyId: string): Promise<Vehicle[]>;
     findByUserId(userId: string): Promise<Vehicle[]>;
     private toDomain;

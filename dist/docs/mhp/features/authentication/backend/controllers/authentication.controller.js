@@ -17,6 +17,10 @@ const common_1 = require("@nestjs/common");
 const authentication_service_1 = require("../application/authentication.service");
 const signup_dto_1 = require("../dto/signup.dto");
 const login_dto_1 = require("../dto/login.dto");
+const update_user_dto_1 = require("../dto/update-user.dto");
+const update_password_dto_1 = require("../dto/update-password.dto");
+const upload_avatar_dto_1 = require("../dto/upload-avatar.dto");
+const change_password_dto_1 = require("../../../security/backend/dto/change-password.dto");
 const refresh_token_dto_1 = require("../dto/refresh-token.dto");
 const passport_1 = require("@nestjs/passport");
 const current_user_decorator_1 = require("../decorators/current-user.decorator");
@@ -42,6 +46,34 @@ let AuthenticationController = class AuthenticationController {
     }
     async getCurrentUser(user) {
         const result = await this.authenticationService.getCurrentUser(user.userId);
+        return { data: result };
+    }
+    async updateProfile(user, updateUserDto) {
+        const result = await this.authenticationService.updateProfile(user.userId, updateUserDto);
+        return { data: result };
+    }
+    async updatePassword(user, updatePasswordDto) {
+        const result = await this.authenticationService.updatePassword(user.userId, updatePasswordDto);
+        return { data: result };
+    }
+    async changePassword(user, changePasswordDto) {
+        const result = await this.authenticationService.changePassword(user.userId, changePasswordDto);
+        return { data: result };
+    }
+    async getSessions(user) {
+        const sessions = await this.authenticationService.getUserSessions(user.userId);
+        return { data: sessions };
+    }
+    async logoutAllSessions(user) {
+        const result = await this.authenticationService.logoutAllSessions(user.userId);
+        return { data: result };
+    }
+    async logoutSession(user, sessionId) {
+        const result = await this.authenticationService.logoutSession(user.userId, sessionId);
+        return { data: result };
+    }
+    async uploadAvatar(user, uploadAvatarDto) {
+        const result = await this.authenticationService.uploadAvatar(user.userId, uploadAvatarDto.imageUrl);
         return { data: result };
     }
 };
@@ -87,6 +119,74 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthenticationController.prototype, "getCurrentUser", null);
+__decorate([
+    (0, common_1.Put)('me'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, update_user_dto_1.UpdateUserDto]),
+    __metadata("design:returntype", Promise)
+], AuthenticationController.prototype, "updateProfile", null);
+__decorate([
+    (0, common_1.Put)('me/password'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, update_password_dto_1.UpdatePasswordDto]),
+    __metadata("design:returntype", Promise)
+], AuthenticationController.prototype, "updatePassword", null);
+__decorate([
+    (0, common_1.Put)('change-password'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, change_password_dto_1.ChangePasswordDto]),
+    __metadata("design:returntype", Promise)
+], AuthenticationController.prototype, "changePassword", null);
+__decorate([
+    (0, common_1.Get)('sessions'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthenticationController.prototype, "getSessions", null);
+__decorate([
+    (0, common_1.Delete)('sessions'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthenticationController.prototype, "logoutAllSessions", null);
+__decorate([
+    (0, common_1.Delete)('sessions/:sessionId'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('sessionId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], AuthenticationController.prototype, "logoutSession", null);
+__decorate([
+    (0, common_1.Post)('me/avatar'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, upload_avatar_dto_1.UploadAvatarDto]),
+    __metadata("design:returntype", Promise)
+], AuthenticationController.prototype, "uploadAvatar", null);
 exports.AuthenticationController = AuthenticationController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [authentication_service_1.AuthenticationService])

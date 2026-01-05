@@ -11,4 +11,9 @@ export declare class VehiclesController {
     getUserVehicles(user: CurrentUserPayload): Promise<{
         data: VehicleResponseDto[];
     }>;
+    deleteVehicle(user: CurrentUserPayload, vehicleId: string): Promise<{
+        data: {
+            message: string;
+        };
+    }>;
 }

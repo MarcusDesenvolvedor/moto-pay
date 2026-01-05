@@ -59,6 +59,36 @@ let VehiclesService = class VehiclesService {
             throw new Error(`Failed to get vehicles: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
+    async deleteVehicle(userId, vehicleId) {
+        try {
+            const vehicle = await this.vehicleRepository.findById(vehicleId);
+            if (!vehicle) {
+                throw new common_1.NotFoundException('Vehicle not found');
+            }
+            if (vehicle.deletedAt) {
+                throw new common_1.NotFoundException('Vehicle already deleted');
+            }
+            const companyUser = await this.prisma.companyUser.findFirst({
+                where: {
+                    companyId: vehicle.companyId,
+                    userId: userId,
+                },
+            });
+            if (!companyUser) {
+                throw new common_1.ForbiddenException('You do not have permission to delete this vehicle');
+            }
+            const deletedVehicle = vehicle.delete();
+            await this.vehicleRepository.save(deletedVehicle);
+            return { message: 'Vehicle deleted successfully' };
+        }
+        catch (error) {
+            console.error('Error deleting vehicle:', error);
+            if (error instanceof common_1.ForbiddenException || error instanceof common_1.NotFoundException) {
+                throw error;
+            }
+            throw new Error(`Failed to delete vehicle: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+    }
     toResponseDto(vehicle) {
         return {
             id: vehicle.id,
@@ -66,6 +96,7 @@ let VehiclesService = class VehiclesService {
             plate: vehicle.plate || undefined,
             note: vehicle.note || undefined,
             companyId: vehicle.companyId,
+            isActive: vehicle.isActive,
             createdAt: vehicle.createdAt.toISOString(),
             updatedAt: vehicle.updatedAt.toISOString(),
         };

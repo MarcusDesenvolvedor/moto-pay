@@ -43,6 +43,7 @@ let UserRepository = class UserRepository {
             email: user.email,
             passwordHash: user.passwordHash,
             fullName: user.fullName,
+            avatarUrl: user.avatarUrl,
             isActive: user.isActive,
             updatedAt: user.updatedAt,
         };
@@ -67,7 +68,7 @@ let UserRepository = class UserRepository {
         return count > 0;
     }
     toDomain(prismaUser) {
-        return new user_entity_1.User(prismaUser.id, prismaUser.email, prismaUser.passwordHash, prismaUser.fullName, prismaUser.isActive, prismaUser.createdAt, prismaUser.updatedAt, prismaUser.deletedAt);
+        return new user_entity_1.User(prismaUser.id, prismaUser.email, prismaUser.passwordHash, prismaUser.fullName, prismaUser.avatarUrl, prismaUser.isActive, prismaUser.createdAt, prismaUser.updatedAt, prismaUser.deletedAt);
     }
 };
 exports.UserRepository = UserRepository;

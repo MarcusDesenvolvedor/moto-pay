@@ -39,6 +39,7 @@ export class UserRepository implements IUserRepository {
       email: user.email,
       passwordHash: user.passwordHash,
       fullName: user.fullName,
+      avatarUrl: user.avatarUrl,
       isActive: user.isActive,
       updatedAt: user.updatedAt,
     };
@@ -72,6 +73,7 @@ export class UserRepository implements IUserRepository {
     email: string;
     passwordHash: string;
     fullName: string;
+    avatarUrl: string | null;
     isActive: boolean;
     createdAt: Date;
     updatedAt: Date;
@@ -82,6 +84,7 @@ export class UserRepository implements IUserRepository {
       prismaUser.email,
       prismaUser.passwordHash,
       prismaUser.fullName,
+      prismaUser.avatarUrl,
       prismaUser.isActive,
       prismaUser.createdAt,
       prismaUser.updatedAt,

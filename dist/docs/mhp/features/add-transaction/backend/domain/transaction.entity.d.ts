@@ -15,6 +15,6 @@ export declare class Transaction {
     readonly createdAt: Date;
     readonly updatedAt: Date;
     constructor(id: string, companyId: string, type: TransactionType, amount: number, paid: boolean, note: string | null, recordDate: Date, status: string, vehicleId: string | null, createdAt: Date, updatedAt: Date);
-    static create(companyId: string, type: TransactionType, amount: number, paid: boolean, note?: string, recordDate?: string | Date, vehicleId: string): Transaction;
+    static create(companyId: string, type: TransactionType, amount: number, paid: boolean, vehicleId: string, note?: string, recordDate?: string | Date): Transaction;
     isActive(): boolean;
 }

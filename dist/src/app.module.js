@@ -13,6 +13,7 @@ const authentication_module_1 = require("../docs/mhp/features/authentication/bac
 const transactions_module_1 = require("../docs/mhp/features/add-transaction/backend/transactions.module");
 const reports_module_1 = require("../docs/mhp/features/reports/backend/reports.module");
 const vehicles_module_1 = require("../docs/mhp/features/vehicles/backend/vehicles.module");
+const companies_module_1 = require("../docs/mhp/features/companies/create-company/backend/companies.module");
 const prisma_service_1 = require("../shared/infrastructure/prisma/prisma.service");
 let AppModule = class AppModule {
 };
@@ -28,6 +29,7 @@ exports.AppModule = AppModule = __decorate([
             transactions_module_1.TransactionsModule,
             reports_module_1.ReportsModule,
             vehicles_module_1.VehiclesModule,
+            companies_module_1.CompaniesModule,
         ],
         providers: [prisma_service_1.PrismaService],
         exports: [prisma_service_1.PrismaService],

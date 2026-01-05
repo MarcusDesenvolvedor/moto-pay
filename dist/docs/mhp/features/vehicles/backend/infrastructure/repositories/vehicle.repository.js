@@ -19,8 +19,9 @@ let VehicleRepository = class VehicleRepository {
     }
     async save(vehicle) {
         try {
-            const saved = await this.prisma.vehicle.create({
-                data: {
+            const saved = await this.prisma.vehicle.upsert({
+                where: { id: vehicle.id },
+                create: {
                     id: vehicle.id,
                     companyId: vehicle.companyId,
                     name: vehicle.name,
@@ -30,12 +31,37 @@ let VehicleRepository = class VehicleRepository {
                     isActive: vehicle.isActive,
                     createdAt: vehicle.createdAt,
                     updatedAt: vehicle.updatedAt,
+                    deletedAt: vehicle.deletedAt,
+                },
+                update: {
+                    name: vehicle.name,
+                    plate: vehicle.plate,
+                    note: vehicle.note,
+                    type: vehicle.type,
+                    isActive: vehicle.isActive,
+                    updatedAt: vehicle.updatedAt,
+                    deletedAt: vehicle.deletedAt,
                 },
             });
             return this.toDomain(saved);
         }
         catch (error) {
             console.error('Error saving vehicle:', error);
+            throw error;
+        }
+    }
+    async findById(id) {
+        try {
+            const vehicle = await this.prisma.vehicle.findUnique({
+                where: { id },
+            });
+            if (!vehicle) {
+                return null;
+            }
+            return this.toDomain(vehicle);
+        }
+        catch (error) {
+            console.error('Error finding vehicle by ID:', error);
             throw error;
         }
     }
@@ -93,7 +119,7 @@ let VehicleRepository = class VehicleRepository {
         }
     }
     toDomain(prismaRecord) {
-        return new vehicle_entity_1.Vehicle(prismaRecord.id, prismaRecord.companyId, prismaRecord.name, prismaRecord.plate, prismaRecord.note, prismaRecord.type, prismaRecord.isActive, prismaRecord.createdAt, prismaRecord.updatedAt);
+        return new vehicle_entity_1.Vehicle(prismaRecord.id, prismaRecord.companyId, prismaRecord.name, prismaRecord.plate, prismaRecord.note, prismaRecord.type, prismaRecord.isActive, prismaRecord.createdAt, prismaRecord.updatedAt, prismaRecord.deletedAt);
     }
 };
 exports.VehicleRepository = VehicleRepository;

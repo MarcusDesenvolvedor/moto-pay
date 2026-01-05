@@ -1,10 +1,11 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { HomeReportsScreen } from '../docs/mhp/features/reports/frontend';
 import { AddTransactionScreen } from '../docs/mhp/features/add-transaction/frontend';
 import { AddVehicleScreen } from '../docs/mhp/features/vehicles/frontend';
+import { ProfileStack } from './ProfileStack';
 import { colors } from '../shared/theme/colors';
 import { typography } from '../shared/theme/typography';
 import { spacing } from '../shared/theme/spacing';
@@ -17,14 +18,6 @@ export type AppTabsParamList = {
 };
 
 const Tab = createBottomTabNavigator<AppTabsParamList>();
-
-function ProfilePlaceholder() {
-  return (
-    <View style={styles.placeholder}>
-      <Text style={styles.placeholderText}>Profile</Text>
-    </View>
-  );
-}
 
 export function AppTabs() {
   return (
@@ -69,12 +62,13 @@ export function AppTabs() {
       />
       <Tab.Screen
         name="Profile"
-        component={ProfilePlaceholder}
+        component={ProfileStack}
         options={{
           tabBarLabel: 'Perfil',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size || 24} color={color} />
           ),
+          headerShown: false,
         }}
       />
     </Tab.Navigator>
@@ -93,16 +87,6 @@ const styles = StyleSheet.create({
   tabBarLabel: {
     ...typography.label,
     fontSize: 12,
-  },
-  placeholder: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-  },
-  placeholderText: {
-    ...typography.h2,
-    color: colors.textSecondary,
   },
 });
 

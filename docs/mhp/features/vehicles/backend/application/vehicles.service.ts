@@ -78,6 +78,52 @@ export class VehiclesService {
     }
   }
 
+  async deleteVehicle(
+    userId: string,
+    vehicleId: string,
+  ): Promise<{ message: string }> {
+    try {
+      // Get vehicle
+      const vehicle = await this.vehicleRepository.findById(vehicleId);
+
+      if (!vehicle) {
+        throw new NotFoundException('Vehicle not found');
+      }
+
+      if (vehicle.deletedAt) {
+        throw new NotFoundException('Vehicle already deleted');
+      }
+
+      // Verify user belongs to the company that owns the vehicle
+      const companyUser = await this.prisma.companyUser.findFirst({
+        where: {
+          companyId: vehicle.companyId,
+          userId: userId,
+        },
+      });
+
+      if (!companyUser) {
+        throw new ForbiddenException(
+          'You do not have permission to delete this vehicle',
+        );
+      }
+
+      // Soft delete vehicle
+      const deletedVehicle = vehicle.delete();
+      await this.vehicleRepository.save(deletedVehicle);
+
+      return { message: 'Vehicle deleted successfully' };
+    } catch (error) {
+      console.error('Error deleting vehicle:', error);
+      if (error instanceof ForbiddenException || error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new Error(
+        `Failed to delete vehicle: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
   private toResponseDto(vehicle: Vehicle): VehicleResponseDto {
     return {
       id: vehicle.id,
@@ -85,6 +131,7 @@ export class VehiclesService {
       plate: vehicle.plate || undefined,
       note: vehicle.note || undefined,
       companyId: vehicle.companyId,
+      isActive: vehicle.isActive,
       createdAt: vehicle.createdAt.toISOString(),
       updatedAt: vehicle.updatedAt.toISOString(),
     };

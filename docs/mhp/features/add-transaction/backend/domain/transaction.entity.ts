@@ -25,9 +25,9 @@ export class Transaction {
     type: TransactionType,
     amount: number,
     paid: boolean,
+    vehicleId: string,
     note?: string,
     recordDate?: string | Date,
-    vehicleId: string,
   ): Transaction {
     const now = new Date();
     let transactionRecordDate: Date;
