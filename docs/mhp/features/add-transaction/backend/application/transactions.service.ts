@@ -67,9 +67,9 @@ export class TransactionsService {
         createTransactionDto.type,
         createTransactionDto.amount,
         createTransactionDto.paid,
+        createTransactionDto.vehicleId,
         createTransactionDto.note,
         createTransactionDto.recordDate,
-        createTransactionDto.vehicleId,
       );
 
       // Save transaction

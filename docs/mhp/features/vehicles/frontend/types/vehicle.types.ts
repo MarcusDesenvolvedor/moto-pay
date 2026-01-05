@@ -10,6 +10,7 @@ export interface Vehicle {
   plate?: string;
   note?: string;
   companyId: string;
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }

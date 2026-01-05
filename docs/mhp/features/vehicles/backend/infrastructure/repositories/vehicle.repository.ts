@@ -16,8 +16,9 @@ export class VehicleRepository implements IVehicleRepository {
 
   async save(vehicle: Vehicle): Promise<Vehicle> {
     try {
-      const saved = await this.prisma.vehicle.create({
-        data: {
+      const saved = await this.prisma.vehicle.upsert({
+        where: { id: vehicle.id },
+        create: {
           id: vehicle.id,
           companyId: vehicle.companyId,
           name: vehicle.name,
@@ -27,12 +28,39 @@ export class VehicleRepository implements IVehicleRepository {
           isActive: vehicle.isActive,
           createdAt: vehicle.createdAt,
           updatedAt: vehicle.updatedAt,
+          deletedAt: vehicle.deletedAt,
+        },
+        update: {
+          name: vehicle.name,
+          plate: vehicle.plate,
+          note: vehicle.note,
+          type: vehicle.type,
+          isActive: vehicle.isActive,
+          updatedAt: vehicle.updatedAt,
+          deletedAt: vehicle.deletedAt,
         },
       });
 
       return this.toDomain(saved as PrismaVehicleWithNameAndNote);
     } catch (error) {
       console.error('Error saving vehicle:', error);
+      throw error;
+    }
+  }
+
+  async findById(id: string): Promise<Vehicle | null> {
+    try {
+      const vehicle = await this.prisma.vehicle.findUnique({
+        where: { id },
+      });
+
+      if (!vehicle) {
+        return null;
+      }
+
+      return this.toDomain(vehicle as PrismaVehicleWithNameAndNote);
+    } catch (error) {
+      console.error('Error finding vehicle by ID:', error);
       throw error;
     }
   }
@@ -108,6 +136,7 @@ export class VehicleRepository implements IVehicleRepository {
       prismaRecord.isActive,
       prismaRecord.createdAt,
       prismaRecord.updatedAt,
+      prismaRecord.deletedAt,
     );
   }
 }

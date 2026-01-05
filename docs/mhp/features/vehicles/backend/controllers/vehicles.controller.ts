@@ -2,7 +2,9 @@ import {
   Controller,
   Post,
   Get,
+  Delete,
   Body,
+  Param,
   UseGuards,
   HttpCode,
   HttpStatus,
@@ -41,6 +43,19 @@ export class VehiclesController {
   ): Promise<{ data: VehicleResponseDto[] }> {
     const vehicles = await this.vehiclesService.getUserVehicles(user.userId);
     return { data: vehicles };
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  async deleteVehicle(
+    @CurrentUser() user: CurrentUserPayload,
+    @Param('id') vehicleId: string,
+  ): Promise<{ data: { message: string } }> {
+    const result = await this.vehiclesService.deleteVehicle(
+      user.userId,
+      vehicleId,
+    );
+    return { data: result };
   }
 }
 
