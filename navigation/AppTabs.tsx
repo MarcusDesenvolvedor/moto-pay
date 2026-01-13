@@ -1,7 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, View } from 'react-native';
 import { HomeReportsScreen } from '../docs/mhp/features/reports/frontend';
 import { AddTransactionScreen } from '../docs/mhp/features/add-transaction/frontend';
 import { AddVehicleScreen } from '../docs/mhp/features/vehicles/frontend';
@@ -9,6 +8,8 @@ import { ProfileStack } from './ProfileStack';
 import { colors } from '../shared/theme/colors';
 import { typography } from '../shared/theme/typography';
 import { spacing } from '../shared/theme/spacing';
+import { AnimatedTabIcon } from '../shared/components/animated/AnimatedTabIcon';
+import { AnimatedTabLabel } from '../shared/components/animated/AnimatedTabLabel';
 
 export type AppTabsParamList = {
   Home: undefined;
@@ -34,9 +35,20 @@ export function AppTabs() {
         name="Home"
         component={HomeReportsScreen}
         options={{
-          tabBarLabel: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size || 24} color={color} />
+          tabBarLabel: ({ focused, color }) => (
+            <AnimatedTabLabel
+              label="Home"
+              focused={focused}
+              style={[styles.tabBarLabel, { color }]}
+            />
+          ),
+          tabBarIcon: ({ color, size, focused }) => (
+            <AnimatedTabIcon
+              name="home"
+              size={size || 24}
+              color={color}
+              focused={focused}
+            />
           ),
         }}
       />
@@ -44,9 +56,20 @@ export function AppTabs() {
         name="Vehicles"
         component={AddVehicleScreen}
         options={{
-          tabBarLabel: 'Veículos',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="car" size={size || 24} color={color} />
+          tabBarLabel: ({ focused, color }) => (
+            <AnimatedTabLabel
+              label="Veículos"
+              focused={focused}
+              style={[styles.tabBarLabel, { color }]}
+            />
+          ),
+          tabBarIcon: ({ color, size, focused }) => (
+            <AnimatedTabIcon
+              name="car"
+              size={size || 24}
+              color={color}
+              focused={focused}
+            />
           ),
         }}
       />
@@ -54,9 +77,20 @@ export function AppTabs() {
         name="Add"
         component={AddTransactionScreen}
         options={{
-          tabBarLabel: 'Adicionar',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="add-circle" size={size || 24} color={color} />
+          tabBarLabel: ({ focused, color }) => (
+            <AnimatedTabLabel
+              label="Adicionar"
+              focused={focused}
+              style={[styles.tabBarLabel, { color }]}
+            />
+          ),
+          tabBarIcon: ({ color, size, focused }) => (
+            <AnimatedTabIcon
+              name="add-circle"
+              size={size || 24}
+              color={color}
+              focused={focused}
+            />
           ),
         }}
       />
@@ -64,9 +98,20 @@ export function AppTabs() {
         name="Profile"
         component={ProfileStack}
         options={{
-          tabBarLabel: 'Perfil',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size || 24} color={color} />
+          tabBarLabel: ({ focused, color }) => (
+            <AnimatedTabLabel
+              label="Perfil"
+              focused={focused}
+              style={[styles.tabBarLabel, { color }]}
+            />
+          ),
+          tabBarIcon: ({ color, size, focused }) => (
+            <AnimatedTabIcon
+              name="person"
+              size={size || 24}
+              color={color}
+              focused={focused}
+            />
           ),
           headerShown: false,
         }}

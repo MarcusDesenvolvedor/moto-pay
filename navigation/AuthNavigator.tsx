@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { LoginScreen } from '../docs/mhp/features/authentication/frontend/screens/login-screen';
 import { SignupScreen } from '../docs/mhp/features/authentication/frontend/screens/signup-screen';
 import { colors } from '../shared/theme/colors';
+import { stackTransitionConfig } from '../shared/animations/transitions';
 
 export type AuthStackParamList = {
   Login: undefined;
@@ -17,6 +18,7 @@ export function AuthNavigator() {
       screenOptions={{
         headerShown: false,
         cardStyle: { backgroundColor: colors.background },
+        ...stackTransitionConfig,
       }}
       initialRouteName="Login"
     >

@@ -6,3 +6,7 @@ export class UploadAvatarDto {
   imageUrl: string; // Base64 or data URL from frontend
 }
 
+
+
+
+
