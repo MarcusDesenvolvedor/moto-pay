@@ -8,13 +8,17 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "NODE_ENV": "production"
+        "NODE_ENV": "production",
+        "EAS_NO_VCS": "1",
+        "GRADLE_OPTS": "-Dorg.gradle.daemon=false"
       },
       "cache": {
         "disabled": true
       },
       "android": {
-        "withoutCredentials": true
+        "withoutCredentials": true,
+        "buildType": "apk",
+        "image": "latest"
       },
       "ios": {
         "buildConfiguration": "Debug"
