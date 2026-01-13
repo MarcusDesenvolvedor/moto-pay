@@ -6,7 +6,7 @@ module.exports = {
     orientation: 'portrait',
     userInterfaceStyle: 'dark',
     splash: {
-      image: './shared/assets/logo.png',
+      image: './assets/splash.png',
       resizeMode: 'contain',
       backgroundColor: '#000000',
     },
@@ -17,24 +17,17 @@ module.exports = {
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: './shared/assets/logo.png',
+        foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: '#000000',
       },
       package: 'com.motopay.app',
     },
     web: {
-      favicon: './shared/assets/logo.png',
+      favicon: './assets/favicon.png',
     },
     extra: {
       apiUrl: process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001',
-      eas: {
-        projectId: 'a095ef1d-2486-411d-a991-b430a5b3839d',
-      },
     },
-    plugins: [
-      'expo-dev-client',
-      'expo-font',
-    ],
   },
 };
 
