@@ -9,6 +9,7 @@ import { SecurityScreen } from '../docs/mhp/features/security/frontend/screens/S
 import { colors } from '../shared/theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
+import { stackTransitionConfig } from '../shared/animations/transitions';
 
 export type ProfileStackParamList = {
   ProfileMain: undefined;
@@ -36,6 +37,7 @@ export function ProfileStack() {
           color: colors.text,
         },
         cardStyle: { backgroundColor: colors.background },
+        ...stackTransitionConfig,
       }}
     >
       <Stack.Screen

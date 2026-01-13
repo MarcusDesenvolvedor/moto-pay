@@ -150,3 +150,7 @@ Error responses include friendly messages for user feedback.
 - Company data is isolated by company_id
 
 
+
+
+
+
