@@ -1,1 +1,9 @@
 node_modules
+
+# Expo
+.expo/
+.expo-shared/
+
+# Native builds (CNG/Prebuild)
+/android
+/ios
