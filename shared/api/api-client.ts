@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { getToken, getRefreshToken, saveAccessToken, clearTokens } from '../storage/token-storage';
 
+// Backend API - use your machine IP for device (ex: http://192.168.100.139:3001)
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
 

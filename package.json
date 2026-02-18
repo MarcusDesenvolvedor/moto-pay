@@ -1,4 +1,7 @@
 {
+  "overrides": {
+    "react-native-worklets": "0.5.1"
+  },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
     "@hookform/resolvers": "^5.2.2",
@@ -49,6 +52,7 @@
     "@types/passport-jwt": "^4.0.1",
     "@types/react": "~19.1.10",
     "babel-preset-expo": "^54.0.9",
+    "http-proxy-middleware": "^3.0.5",
     "prisma": "^5.19.0",
     "typescript": "^5.5.0"
   },
@@ -59,6 +63,10 @@
     "check:backend": "powershell -ExecutionPolicy Bypass -File verificar-backend.ps1",
     "tunnel": "npx localtunnel --port 3001 --print",
     "tunnel:local": "npx localtunnel --port 3001 --local-host localhost --print",
-    "tunnel:ngrok": "ngrok http 3001"
-  }
+    "tunnel:ngrok": "ngrok http 3001",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
+  },
+  "name": "moto-pay",
+  "version": "1.0.0"
 }
