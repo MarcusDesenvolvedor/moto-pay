@@ -12,41 +12,44 @@ export class CloudinaryService {
     });
   }
 
+  /**
+   * Upload image to Cloudinary.
+   * @param file - Image buffer (from multipart upload) or base64 data URI
+   * @param folder - Folder name (default: avatars)
+   * @param publicId - Public ID for the asset
+   * @returns Secure URL of the uploaded image
+   */
   async uploadImage(
-    fileBuffer: Buffer,
+    file: Buffer | string,
     folder: string = 'avatars',
     publicId?: string,
   ): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder,
-          public_id: publicId,
-          resource_type: 'image',
-          transformation: [
-            {
-              width: 512,
-              height: 512,
-              crop: 'fill',
-              quality: 'auto',
-              format: 'jpg',
-            },
-          ],
-        },
-        (error, result) => {
-          if (error) {
-            reject(error);
-          } else if (result) {
-            resolve(result.secure_url);
-          } else {
-            reject(new Error('Upload failed: No result returned'));
-          }
-        },
-      );
+    const options: { folder: string; resource_type: 'image'; public_id?: string } = {
+      folder,
+      resource_type: 'image',
+    };
+    if (publicId) {
+      options.public_id = publicId;
+    }
 
-      // Write buffer directly to upload stream
-      uploadStream.end(fileBuffer);
+    const result = await new Promise<{ secure_url?: string }>((resolve, reject) => {
+      if (Buffer.isBuffer(file)) {
+        cloudinary.uploader.upload_stream(options, (err, res) => {
+          if (err) reject(err);
+          else resolve(res ?? {});
+        }).end(file);
+      } else {
+        cloudinary.uploader.upload(file, options)
+          .then(resolve)
+          .catch(reject);
+      }
     });
+
+    if (!result?.secure_url) {
+      throw new Error('Cloudinary upload failed: no URL returned');
+    }
+
+    return result.secure_url;
   }
 
   async deleteImage(publicId: string): Promise<void> {
@@ -54,20 +57,11 @@ export class CloudinaryService {
       await cloudinary.uploader.destroy(publicId);
     } catch (error) {
       console.error('Error deleting image from Cloudinary:', error);
-      // Don't throw error, just log it
     }
   }
 
   extractPublicIdFromUrl(url: string): string | null {
-    try {
-      const matches = url.match(/\/v\d+\/(.+)\.(jpg|jpeg|png|gif|webp)/i);
-      if (matches && matches[1]) {
-        return matches[1];
-      }
-      return null;
-    } catch {
-      return null;
-    }
+    const matches = url.match(/\/v\d+\/(.+)\.(jpg|jpeg|png|gif|webp)/i);
+    return matches?.[1] ?? null;
   }
 }
-

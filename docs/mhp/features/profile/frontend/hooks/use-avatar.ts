@@ -5,7 +5,9 @@ import { authApi } from '../../../authentication/frontend/api/auth.api';
 const loadAvatarFromProfile = async (): Promise<string | null> => {
   try {
     const response = await authApi.getCurrentUser();
-    return response.data.avatarUrl || null;
+    const user = response?.data;
+    const url = user?.avatarUrl;
+    return url && typeof url === 'string' ? url : null;
   } catch (error) {
     console.error('Error loading avatar from profile:', error);
     return null;

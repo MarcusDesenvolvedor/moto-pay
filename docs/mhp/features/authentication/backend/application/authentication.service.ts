@@ -1,7 +1,9 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   Inject,
+  InternalServerErrorException,
   UnauthorizedException,
   NotFoundException,
 } from '@nestjs/common';
@@ -190,9 +192,9 @@ export class AuthenticationService {
     };
   }
 
-  async uploadAvatar(
+  async updateAvatarUrl(
     userId: string,
-    imageBase64: string,
+    avatarUrl: string,
   ): Promise<UserResponseDto> {
     const user = await this.userRepository.findById(userId);
 
@@ -201,19 +203,6 @@ export class AuthenticationService {
     }
 
     try {
-      // Convert base64 to buffer
-      const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
-      const imageBuffer = Buffer.from(base64Data, 'base64');
-
-      // Upload to Cloudinary
-      const publicId = `avatar_${userId}`;
-      const avatarUrl = await this.cloudinaryService.uploadImage(
-        imageBuffer,
-        'avatars',
-        publicId,
-      );
-
-      // Delete old avatar if exists
       if (user.avatarUrl) {
         const oldPublicId = this.cloudinaryService.extractPublicIdFromUrl(
           user.avatarUrl,
@@ -223,7 +212,6 @@ export class AuthenticationService {
         }
       }
 
-      // Update user with new avatar URL
       const updatedUser = user.updateAvatar(avatarUrl);
       const savedUser = await this.userRepository.save(updatedUser);
 
@@ -236,8 +224,12 @@ export class AuthenticationService {
         createdAt: savedUser.createdAt,
       };
     } catch (error) {
-      console.error('Error uploading avatar:', error);
-      throw new Error('Failed to upload avatar');
+      console.error('Error updating avatar:', error);
+      if (error instanceof UnauthorizedException || error instanceof BadRequestException) {
+        throw error;
+      }
+      const message = error instanceof Error ? error.message : 'Falha ao atualizar avatar';
+      throw new InternalServerErrorException(message);
     }
   }
 

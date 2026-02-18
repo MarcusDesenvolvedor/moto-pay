@@ -15,7 +15,7 @@ import { SignupDto } from '../dto/signup.dto';
 import { LoginDto } from '../dto/login.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UpdatePasswordDto } from '../dto/update-password.dto';
-import { UploadAvatarDto } from '../dto/upload-avatar.dto';
+import { UpdateAvatarUrlDto } from '../dto/update-avatar-url.dto';
 import { ChangePasswordDto } from '../../../security/backend/dto/change-password.dto';
 import { SessionResponseDto } from '../../../security/backend/dto/session-response.dto';
 import { RefreshTokenDto } from '../dto/refresh-token.dto';
@@ -153,16 +153,16 @@ export class AuthenticationController {
     return { data: result };
   }
 
-  @Post('me/avatar')
+  @Put('me/avatar')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
-  async uploadAvatar(
+  async updateAvatarUrl(
     @CurrentUser() user: CurrentUserPayload,
-    @Body() uploadAvatarDto: UploadAvatarDto,
+    @Body() dto: UpdateAvatarUrlDto,
   ): Promise<{ data: UserResponseDto }> {
-    const result = await this.authenticationService.uploadAvatar(
+    const result = await this.authenticationService.updateAvatarUrl(
       user.userId,
-      uploadAvatarDto.imageUrl,
+      dto.avatarUrl,
     );
     return { data: result };
   }

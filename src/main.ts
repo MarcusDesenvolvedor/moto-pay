@@ -1,9 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { json, urlencoded } from 'express';
 import { AppModule } from './app.module';
+
+const BODY_LIMIT = '10mb';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Increase body limit for avatar upload (base64 images)
+  app.use(json({ limit: BODY_LIMIT }));
+  app.use(urlencoded({ limit: BODY_LIMIT, extended: true }));
 
   app.useGlobalPipes(
     new ValidationPipe({

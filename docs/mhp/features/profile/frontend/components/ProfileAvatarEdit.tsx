@@ -16,18 +16,19 @@ interface ProfileAvatarEditProps {
   imageUri?: string | null;
   onImageSelected?: (uri: string) => void;
   size?: number;
+  isUploading?: boolean;
 }
 
 export function ProfileAvatarEdit({
   imageUri,
   onImageSelected,
   size = 120,
+  isUploading = false,
 }: ProfileAvatarEditProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPicking, setIsPicking] = useState(false);
 
   const handleImagePicker = async () => {
     try {
-      // Request permissions
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert(
@@ -37,7 +38,7 @@ export function ProfileAvatarEdit({
         return;
       }
 
-      // Launch image picker
+      // Crop first (allowsEditing), then resize and compress
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         allowsEditing: true,
@@ -50,34 +51,24 @@ export function ProfileAvatarEdit({
       }
 
       if (result.assets && result.assets[0]) {
-        setIsLoading(true);
+        setIsPicking(true);
 
         try {
-          // Resize and compress image
           const manipulatedImage = await ImageManipulator.manipulateAsync(
             result.assets[0].uri,
-            [
-              {
-                resize: {
-                  width: 512,
-                  height: 512,
-                },
-              },
-            ],
+            [{ resize: { width: 512, height: 512 } }],
             {
-              compress: 0.7,
+              compress: 0.6,
               format: ImageManipulator.SaveFormat.JPEG,
             },
           );
 
-          if (onImageSelected) {
-            onImageSelected(manipulatedImage.uri);
-          }
+          onImageSelected?.(manipulatedImage.uri);
         } catch (error) {
           console.error('Error processing image:', error);
           Alert.alert('Erro', 'Não foi possível processar a imagem.');
         } finally {
-          setIsLoading(false);
+          setIsPicking(false);
         }
       }
     } catch (error) {
@@ -85,6 +76,8 @@ export function ProfileAvatarEdit({
       Alert.alert('Erro', 'Não foi possível selecionar a imagem.');
     }
   };
+
+  const isLoading = isPicking || isUploading;
 
   return (
     <TouchableOpacity
@@ -95,17 +88,14 @@ export function ProfileAvatarEdit({
     >
       <View style={[styles.avatarContainer, { width: size, height: size }]}>
         {isLoading ? (
-          <ActivityIndicator size="large" color={colors.primary} />
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color={colors.primary} />
+          </View>
         ) : imageUri ? (
           <Image source={{ uri: imageUri }} style={styles.avatarImage} />
         ) : (
           <View style={styles.placeholder}>
             <Ionicons name="person" size={size * 0.5} color={colors.textSecondary} />
-          </View>
-        )}
-        {!isLoading && (
-          <View style={styles.editBadge}>
-            <Ionicons name="camera" size={16} color={colors.text} />
           </View>
         )}
       </View>
@@ -137,18 +127,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.backgroundSecondary,
   },
-  editBadge: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    width: 32,
-    height: 32,
+  loadingOverlay: {
+    width: '100%',
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: colors.background,
+    backgroundColor: colors.backgroundSecondary,
   },
 });
 

@@ -12,7 +12,6 @@ import { useNavigation } from '@react-navigation/native';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as FileSystem from 'expo-file-system/legacy';
 import { useEditProfile } from '../hooks/use-edit-profile';
 import { ProfileAvatarEdit } from '../../../frontend/components/ProfileAvatarEdit';
 import { Input } from '../../../../../../../shared/components/Input';
@@ -92,47 +91,24 @@ export function EditProfileScreen() {
 
   const handleAvatarSelected = async (uri: string) => {
     try {
-      // Show local preview immediately
       setLocalAvatarUri(uri);
 
-      // Convert image to base64
-      let base64: string;
-      
-      if (Platform.OS === 'web') {
-        // For web, use fetch to read the file
-        const response = await fetch(uri);
-        const blob = await response.blob();
-        base64 = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            const result = reader.result as string;
-            // Remove data URL prefix
-            const base64String = result.split(',')[1];
-            resolve(base64String);
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        });
-      } else {
-        // For mobile, use FileSystem legacy API
-        // Using legacy API for compatibility with expo-file-system v19+
-        base64 = await FileSystem.readAsStringAsync(uri, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
+      const result = await uploadAvatar(uri);
+      const newAvatarUrl = result?.data?.avatarUrl ?? null;
+
+      if (newAvatarUrl) {
+        setLocalAvatarUri(newAvatarUrl);
+        Alert.alert('Sucesso', 'Foto de perfil atualizada com sucesso!');
       }
-
-      const imageBase64 = `data:image/jpeg;base64,${base64}`;
-
-      // Upload to Cloudinary via backend
-      await uploadAvatar(imageBase64);
-
-      Alert.alert('Sucesso', 'Foto de perfil atualizada com sucesso!');
-    } catch (error: any) {
-      // Revert to previous avatar on error
+    } catch (error: unknown) {
       setLocalAvatarUri(profile?.avatarUrl || null);
+      const err = error as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
       const errorMessage =
-        error?.response?.data?.message ||
-        error?.message ||
+        err?.response?.data?.message ??
+        err?.message ??
         'Não foi possível fazer upload da foto. Tente novamente.';
       Alert.alert('Erro', errorMessage);
     }
@@ -173,6 +149,7 @@ export function EditProfileScreen() {
             imageUri={localAvatarUri}
             onImageSelected={handleAvatarSelected}
             size={120}
+            isUploading={isUploadingAvatar}
           />
           <Text style={styles.avatarHint}>
             Toque na foto para alterar
