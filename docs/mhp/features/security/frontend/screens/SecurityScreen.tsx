@@ -21,6 +21,7 @@ import { colors } from '../../../../../../shared/theme/colors';
 import { typography } from '../../../../../../shared/theme/typography';
 import { spacing } from '../../../../../../shared/theme/spacing';
 import { ProfileStackParamList } from '../../../../../../navigation/ProfileStack';
+import { ScreenHeader } from '../../../../../../shared/components/ScreenHeader';
 
 type SecurityScreenNavigationProp = StackNavigationProp<
   ProfileStackParamList,
@@ -139,9 +140,11 @@ export function SecurityScreen() {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
+    <View style={styles.container}>
+      <ScreenHeader title="Security" showBackButton />
+      <ScrollView
+        style={styles.flex}
+        contentContainerStyle={styles.content}
       refreshControl={
         <RefreshControl
           refreshing={isLoadingSessions}
@@ -270,6 +273,7 @@ export function SecurityScreen() {
         isLoading={logoutAllSessionsMutation.isPending}
       />
     </ScrollView>
+    </View>
   );
 }
 
@@ -277,6 +281,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  flex: {
+    flex: 1,
   },
   content: {
     padding: spacing.lg,

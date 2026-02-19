@@ -19,6 +19,7 @@ import { CreateVehicleRequest } from '../types/vehicle.types';
 import { colors } from '../../../../../../shared/theme/colors';
 import { typography } from '../../../../../../shared/theme/typography';
 import { spacing } from '../../../../../../shared/theme/spacing';
+import { ScreenHeader } from '../../../../../../shared/components/ScreenHeader';
 
 const vehicleSchema = z.object({
   name: z.string().min(1, 'Vehicle name is required'),
@@ -76,17 +77,17 @@ export function AddVehicleScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
+    <View style={styles.container}>
+      <ScreenHeader title="Register Vehicle" showBackButton />
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.content}>
-          <Text style={styles.title}>Register Vehicle</Text>
-
           {/* Vehicle Name Input */}
           <View style={styles.section}>
             <Controller
@@ -154,6 +155,7 @@ export function AddVehicleScreen() {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    </View>
   );
 }
 
@@ -162,17 +164,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  flex: {
+    flex: 1,
+  },
   scrollContent: {
     flexGrow: 1,
   },
   content: {
     padding: spacing.lg,
-    paddingTop: spacing.xl + spacing.md,
-  },
-  title: {
-    ...typography.h1,
-    color: colors.text,
-    marginBottom: spacing.xl,
+    paddingTop: spacing.lg,
   },
   section: {
     marginBottom: spacing.lg,

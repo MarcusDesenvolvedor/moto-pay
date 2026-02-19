@@ -20,6 +20,7 @@ import { Loading } from '../../../../../../../shared/components/Loading';
 import { colors } from '../../../../../../../shared/theme/colors';
 import { typography } from '../../../../../../../shared/theme/typography';
 import { spacing } from '../../../../../../../shared/theme/spacing';
+import { ScreenHeader } from '../../../../../../../shared/components/ScreenHeader';
 
 const editProfileSchema = z.object({
   fullName: z.string().min(1, 'Name is required'),
@@ -133,11 +134,13 @@ export function EditProfileScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-    >
+    <View style={styles.container}>
+      <ScreenHeader title="Edit Profile" showBackButton />
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -224,6 +227,7 @@ export function EditProfileScreen() {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    </View>
   );
 }
 
@@ -231,6 +235,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  flex: {
+    flex: 1,
   },
   loadingContainer: {
     flex: 1,

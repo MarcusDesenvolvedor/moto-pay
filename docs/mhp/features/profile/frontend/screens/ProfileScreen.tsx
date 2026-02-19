@@ -19,6 +19,7 @@ import { Loading } from '../../../../../../shared/components/Loading';
 import { colors } from '../../../../../../shared/theme/colors';
 import { typography } from '../../../../../../shared/theme/typography';
 import { spacing } from '../../../../../../shared/theme/spacing';
+import { ScreenHeader } from '../../../../../../shared/components/ScreenHeader';
 
 type ProfileScreenNavigationProp = StackNavigationProp<
   ProfileStackParamList,
@@ -116,10 +117,12 @@ export function ProfileScreen() {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.scrollContent}
-    >
+    <View style={styles.container}>
+      <ScreenHeader title="Profile" />
+      <ScrollView
+        style={styles.flex}
+        contentContainerStyle={styles.scrollContent}
+      >
       {/* Profile Header */}
       <View style={styles.header}>
         <ProfileAvatarView
@@ -179,6 +182,7 @@ export function ProfileScreen() {
         />
       </View>
     </ScrollView>
+    </View>
   );
 }
 
@@ -186,6 +190,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  flex: {
+    flex: 1,
   },
   loadingContainer: {
     flex: 1,
@@ -198,7 +205,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    paddingTop: spacing.xl + spacing.md,
+    paddingTop: spacing.lg,
     paddingBottom: spacing.xl,
     paddingHorizontal: spacing.lg,
   },

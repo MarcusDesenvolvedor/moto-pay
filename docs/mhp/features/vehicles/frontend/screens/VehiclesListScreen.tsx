@@ -21,6 +21,7 @@ import { colors } from '../../../../../../shared/theme/colors';
 import { typography } from '../../../../../../shared/theme/typography';
 import { spacing } from '../../../../../../shared/theme/spacing';
 import { ProfileStackParamList } from '../../../../../../navigation/ProfileStack';
+import { ScreenHeader } from '../../../../../../shared/components/ScreenHeader';
 
 type VehiclesListScreenNavigationProp = StackNavigationProp<
   ProfileStackParamList,
@@ -133,7 +134,9 @@ export function VehiclesListScreen() {
 
   return (
     <View style={styles.container}>
+      <ScreenHeader title="My Vehicles" showBackButton />
       <FlatList
+        style={styles.list}
         data={vehicles || []}
         renderItem={renderVehicleItem}
         keyExtractor={(item) => item.id}
@@ -184,6 +187,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.background,
+  },
+  list: {
+    flex: 1,
   },
   listContainer: {
     padding: spacing.lg,

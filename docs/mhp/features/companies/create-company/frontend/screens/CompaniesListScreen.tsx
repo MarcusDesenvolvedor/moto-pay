@@ -21,6 +21,7 @@ import { colors } from '../../../../../../../shared/theme/colors';
 import { typography } from '../../../../../../../shared/theme/typography';
 import { spacing } from '../../../../../../../shared/theme/spacing';
 import { ProfileStackParamList } from '../../../../../../../navigation/ProfileStack';
+import { ScreenHeader } from '../../../../../../../shared/components/ScreenHeader';
 
 type CompaniesListScreenNavigationProp = StackNavigationProp<
   ProfileStackParamList,
@@ -130,7 +131,9 @@ export function CompaniesListScreen() {
 
   return (
     <View style={styles.container}>
+      <ScreenHeader title="My Companies" showBackButton />
       <FlatList
+        style={styles.list}
         data={companies || []}
         renderItem={renderCompanyItem}
         keyExtractor={(item) => item.id}
@@ -181,6 +184,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.background,
+  },
+  list: {
+    flex: 1,
   },
   listContainer: {
     padding: spacing.lg,

@@ -6,6 +6,7 @@ import {
   ScrollView,
   RefreshControl,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 import { colors } from '../../../../../../shared/theme/colors';
@@ -14,18 +15,37 @@ import { spacing } from '../../../../../../shared/theme/spacing';
 import { Loading } from '../../../../../../shared/components/Loading';
 import { useCompanies } from '../../../../../../shared/hooks/use-companies';
 import { useVehicles } from '../../../vehicles/frontend/hooks/use-vehicles';
+import { useProfile } from '../../../profile/frontend/hooks/use-profile';
+import { useAvatar } from '../../../profile/frontend/hooks/use-avatar';
 import {
   useReportsSummaryByPeriod,
   useReportsByCategory,
   useReportsByVehicle,
 } from '../hooks';
+import { ReportsHeader } from '../components/ReportsHeader';
 import { DailySummaryCard } from '../components/DailySummaryCard';
 import { EvolutionChart } from '../components/EvolutionChart';
 import { CategoryChart } from '../components/CategoryChart';
 import { VehicleChart } from '../components/VehicleChart';
-import { ReportsFilterBar } from '../components/ReportsFilterBar';
+import {
+  ReportsFiltersModal,
+  ReportsFiltersState,
+  VehicleFilterOption,
+} from '../components/ReportsFiltersModal';
 import { PeriodPreset } from '../types/reports.types';
 import { getPeriodRange } from '../utils/period-utils';
+
+function getFirstName(fullName?: string | null, email?: string | null): string {
+  if (fullName?.trim()) {
+    const first = fullName.trim().split(/\s+/)[0];
+    if (first) return first;
+  }
+  if (email) {
+    const localPart = email.split('@')[0];
+    if (localPart) return localPart;
+  }
+  return 'User';
+}
 
 function getTodayLocalDate(): string {
   const now = new Date();
@@ -39,10 +59,13 @@ export function HomeReportsScreen() {
   const queryClient = useQueryClient();
   const { data: companies = [], isLoading: isLoadingCompanies } = useCompanies();
   const { data: vehicles = [], isLoading: isLoadingVehicles } = useVehicles();
+  const { data: user } = useProfile();
+  const { avatarUri } = useAvatar();
 
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [period, setPeriod] = useState<PeriodPreset>('month');
   const [vehicleId, setVehicleId] = useState<string | null>(null);
+  const [filtersModalVisible, setFiltersModalVisible] = useState(false);
 
   useEffect(() => {
     if (companies.length > 0 && !companyId) {
@@ -122,6 +145,35 @@ export function HomeReportsScreen() {
     refetchVehicle();
   };
 
+  const handleFiltersApply = (filters: ReportsFiltersState) => {
+    setCompanyId(filters.companyId);
+    setPeriod(filters.period);
+    setVehicleId(filters.vehicleId);
+    setFiltersModalVisible(false);
+  };
+
+  const handleNotificationsPress = () => {
+    Alert.alert(
+      'Coming soon',
+      'Notifications will be available in a future update.',
+      [{ text: 'OK' }],
+    );
+  };
+
+  const vehicleOptions: VehicleFilterOption[] = vehicles.map((v) => ({
+    id: v.id,
+    name: v.name,
+    companyId: v.companyId,
+  }));
+
+  const currentFilters: ReportsFiltersState = {
+    companyId,
+    period,
+    vehicleId,
+  };
+
+  const firstName = getFirstName(user?.fullName, user?.email);
+
   if (isLoadingCompanies && companies.length === 0) {
     return (
       <View style={styles.loadingContainer}>
@@ -150,36 +202,36 @@ export function HomeReportsScreen() {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-      refreshControl={
-        <RefreshControl
-          refreshing={isLoading}
-          onRefresh={handleRefresh}
-          tintColor={colors.primary}
+    <View style={styles.container}>
+      <View style={styles.fixedHeader}>
+        <ReportsHeader
+          avatarUri={avatarUri}
+          firstName={firstName}
+          onNotificationsPress={handleNotificationsPress}
         />
-      }
-    >
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Reports</Text>
-        <Text style={styles.headerSubtitle}>
-          Income, expenses and profit by period
-        </Text>
       </View>
 
-      <ReportsFilterBar
-        companies={companies}
-        companyId={companyId}
-        onCompanyChange={setCompanyId}
-        period={period}
-        onPeriodChange={setPeriod}
-        vehicles={vehicles}
-        vehicleId={vehicleId}
-        onVehicleChange={setVehicleId}
-      />
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={handleRefresh}
+            tintColor={colors.primary}
+          />
+        }
+      >
+        <TouchableOpacity
+          style={styles.filtersButton}
+          onPress={() => setFiltersModalVisible(true)}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.filtersButtonText}>Filters</Text>
+        </TouchableOpacity>
 
-      {hasError && (
+        {hasError && (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>
             Could not load data.
@@ -231,7 +283,17 @@ export function HomeReportsScreen() {
           <VehicleChart data={byVehicle ?? []} />
         </>
       )}
-    </ScrollView>
+      </ScrollView>
+
+      <ReportsFiltersModal
+        visible={filtersModalVisible}
+        onClose={() => setFiltersModalVisible(false)}
+        onApply={handleFiltersApply}
+        companies={companies}
+        vehicles={vehicleOptions}
+        initialFilters={currentFilters}
+      />
+    </View>
   );
 }
 
@@ -240,27 +302,40 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  fixedHeader: {
+    paddingTop: spacing.xl + spacing.md,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.md,
+    backgroundColor: colors.background,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  scrollView: {
+    flex: 1,
+  },
   contentContainer: {
     padding: spacing.lg,
-    paddingTop: spacing.xl + spacing.md,
+    paddingBottom: spacing.xxl,
+  },
+  filtersButton: {
+    alignSelf: 'flex-start',
+    marginBottom: spacing.lg,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.backgroundSecondary,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  filtersButtonText: {
+    ...typography.label,
+    color: colors.text,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.background,
-  },
-  header: {
-    marginBottom: spacing.lg,
-  },
-  headerTitle: {
-    ...typography.h1,
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  headerSubtitle: {
-    ...typography.body,
-    color: colors.textSecondary,
   },
   todaySection: {
     marginBottom: spacing.lg,

@@ -20,6 +20,7 @@ import { Loading } from '../../../../../../../shared/components/Loading';
 import { colors } from '../../../../../../../shared/theme/colors';
 import { typography } from '../../../../../../../shared/theme/typography';
 import { spacing } from '../../../../../../../shared/theme/spacing';
+import { ScreenHeader } from '../../../../../../../shared/components/ScreenHeader';
 
 const createCompanySchema = z.object({
   name: z.string().min(1, 'Company name is required'),
@@ -69,11 +70,13 @@ export function CreateCompanyScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-    >
+    <View style={styles.container}>
+      <ScreenHeader title="Create Company" showBackButton />
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -149,6 +152,7 @@ export function CreateCompanyScreen() {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    </View>
   );
 }
 
@@ -156,6 +160,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  flex: {
+    flex: 1,
   },
   scrollView: {
     flex: 1,

@@ -7,8 +7,6 @@ import { AddVehicleScreen } from '../docs/mhp/features/vehicles/frontend';
 import { CompaniesListScreen, CreateCompanyScreen } from '../docs/mhp/features/companies/create-company/frontend';
 import { SecurityScreen } from '../docs/mhp/features/security/frontend/screens/SecurityScreen';
 import { colors } from '../shared/theme/colors';
-import { Ionicons } from '@expo/vector-icons';
-import { TouchableOpacity } from 'react-native';
 import { stackTransitionConfig } from '../shared/animations/transitions';
 
 export type ProfileStackParamList = {
@@ -51,92 +49,32 @@ export function ProfileStack() {
       <Stack.Screen
         name="EditProfile"
         component={EditProfileScreen}
-        options={({ navigation }) => ({
-          title: 'Edit Profile',
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              style={{ marginLeft: 16 }}
-            >
-              <Ionicons name="arrow-back" size={24} color={colors.text} />
-            </TouchableOpacity>
-          ),
-        })}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="VehiclesList"
         component={VehiclesListScreen}
-        options={({ navigation }) => ({
-          title: 'My Vehicles',
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              style={{ marginLeft: 16 }}
-            >
-              <Ionicons name="arrow-back" size={24} color={colors.text} />
-            </TouchableOpacity>
-          ),
-        })}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="AddVehicle"
         component={AddVehicleScreen}
-        options={({ navigation }) => ({
-          title: 'Add Vehicle',
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              style={{ marginLeft: 16 }}
-            >
-              <Ionicons name="arrow-back" size={24} color={colors.text} />
-            </TouchableOpacity>
-          ),
-        })}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="CompaniesList"
         component={CompaniesListScreen}
-        options={({ navigation }) => ({
-          title: 'My Companies',
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              style={{ marginLeft: 16 }}
-            >
-              <Ionicons name="arrow-back" size={24} color={colors.text} />
-            </TouchableOpacity>
-          ),
-        })}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="CreateCompany"
         component={CreateCompanyScreen}
-        options={({ navigation }) => ({
-          title: 'Create Company',
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              style={{ marginLeft: 16 }}
-            >
-              <Ionicons name="arrow-back" size={24} color={colors.text} />
-            </TouchableOpacity>
-          ),
-        })}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="Security"
         component={SecurityScreen}
-        options={({ navigation }) => ({
-          title: 'Security',
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              style={{ marginLeft: 16 }}
-            >
-              <Ionicons name="arrow-back" size={24} color={colors.text} />
-            </TouchableOpacity>
-          ),
-        })}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

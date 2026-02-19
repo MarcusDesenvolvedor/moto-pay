@@ -22,6 +22,7 @@ import { TransactionType, Company, CreateTransactionRequest } from '../types/tra
 import { colors } from '../../../../../../shared/theme/colors';
 import { typography } from '../../../../../../shared/theme/typography';
 import { spacing } from '../../../../../../shared/theme/spacing';
+import { ScreenHeader } from '../../../../../../shared/components/ScreenHeader';
 
 export function AddTransactionScreen() {
   const [type, setType] = useState<TransactionType>(TransactionType.GAIN);
@@ -250,17 +251,17 @@ export function AddTransactionScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
+    <View style={styles.container}>
+      <ScreenHeader title="Add Transaction" />
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.content}>
-          <Text style={styles.title}>New Transaction</Text>
-
           {/* Type Toggle */}
           <View style={styles.section}>
             <Text style={styles.label}>Type</Text>
@@ -505,6 +506,7 @@ export function AddTransactionScreen() {
       </Modal>
 
     </KeyboardAvoidingView>
+    </View>
   );
 }
 
@@ -522,9 +524,12 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
   },
+  flex: {
+    flex: 1,
+  },
   content: {
     padding: spacing.lg,
-    paddingTop: spacing.xl + spacing.md,
+    paddingTop: spacing.lg,
   },
   title: {
     ...typography.h1,
