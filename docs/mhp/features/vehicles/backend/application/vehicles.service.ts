@@ -23,37 +23,15 @@ export class VehiclesService {
     createVehicleDto: CreateVehicleDto,
   ): Promise<VehicleResponseDto> {
     try {
-      // Get user's first company (or we could require companyId in DTO)
-      const companyUser = await this.prisma.companyUser.findFirst({
-        where: {
-          userId: userId,
-          company: {
-            deletedAt: null,
-          },
-        },
-        include: {
-          company: true,
-        },
-      });
-
-      if (!companyUser) {
-        throw new ForbiddenException(
-          `User ${userId} does not belong to any company`,
-        );
-      }
-
-      // Create vehicle entity
       const vehicle = Vehicle.create(
-        companyUser.companyId,
+        userId,
         createVehicleDto.name,
         createVehicleDto.plate,
         createVehicleDto.note,
       );
 
-      // Save vehicle
       const savedVehicle = await this.vehicleRepository.save(vehicle);
 
-      // Map to response DTO
       return this.toResponseDto(savedVehicle);
     } catch (error) {
       console.error('Error creating vehicle:', error);
@@ -94,15 +72,7 @@ export class VehiclesService {
         throw new NotFoundException('Vehicle already deleted');
       }
 
-      // Verify user belongs to the company that owns the vehicle
-      const companyUser = await this.prisma.companyUser.findFirst({
-        where: {
-          companyId: vehicle.companyId,
-          userId: userId,
-        },
-      });
-
-      if (!companyUser) {
+      if (vehicle.userId !== userId) {
         throw new ForbiddenException(
           'You do not have permission to delete this vehicle',
         );
@@ -130,7 +100,6 @@ export class VehiclesService {
       name: vehicle.name,
       plate: vehicle.plate || undefined,
       note: vehicle.note || undefined,
-      companyId: vehicle.companyId,
       isActive: vehicle.isActive,
       createdAt: vehicle.createdAt.toISOString(),
       updatedAt: vehicle.updatedAt.toISOString(),

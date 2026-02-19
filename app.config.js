@@ -14,6 +14,9 @@ module.exports = {
     ios: {
       supportsTablet: true,
       bundleIdentifier: 'com.motopay.app',
+      infoPlist: {
+        UIAppFonts: ['Ionicons.ttf', 'MaterialIcons.ttf'],
+      },
     },
     android: {
       adaptiveIcon: {

@@ -20,7 +20,7 @@ export class VehicleRepository implements IVehicleRepository {
         where: { id: vehicle.id },
         create: {
           id: vehicle.id,
-          companyId: vehicle.companyId,
+          userId: vehicle.userId,
           name: vehicle.name,
           plate: vehicle.plate,
           note: vehicle.note,
@@ -65,52 +65,11 @@ export class VehicleRepository implements IVehicleRepository {
     }
   }
 
-  async findByCompanyId(companyId: string): Promise<Vehicle[]> {
-    try {
-      const vehicles = await this.prisma.vehicle.findMany({
-        where: {
-          companyId: companyId,
-          deletedAt: null,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
-
-      return vehicles.map((v) => this.toDomain(v as PrismaVehicleWithNameAndNote));
-    } catch (error) {
-      console.error('Error finding vehicles by company ID:', error);
-      throw error;
-    }
-  }
-
   async findByUserId(userId: string): Promise<Vehicle[]> {
     try {
-      // Get all companies the user belongs to
-      const companyUsers = await this.prisma.companyUser.findMany({
-        where: {
-          userId: userId,
-          company: {
-            deletedAt: null,
-          },
-        },
-        include: {
-          company: true,
-        },
-      });
-
-      const companyIds = companyUsers.map((cu) => cu.companyId);
-
-      if (companyIds.length === 0) {
-        return [];
-      }
-
-      // Get all vehicles from those companies
       const vehicles = await this.prisma.vehicle.findMany({
         where: {
-          companyId: {
-            in: companyIds,
-          },
+          userId,
           deletedAt: null,
         },
         orderBy: {
@@ -128,7 +87,7 @@ export class VehicleRepository implements IVehicleRepository {
   private toDomain(prismaRecord: PrismaVehicleWithNameAndNote): Vehicle {
     return new Vehicle(
       prismaRecord.id,
-      prismaRecord.companyId,
+      prismaRecord.userId,
       prismaRecord.name,
       prismaRecord.plate,
       prismaRecord.note,

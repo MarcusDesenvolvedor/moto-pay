@@ -163,7 +163,6 @@ export function HomeReportsScreen() {
   const vehicleOptions: VehicleFilterOption[] = vehicles.map((v) => ({
     id: v.id,
     name: v.name,
-    companyId: v.companyId,
   }));
 
   const currentFilters: ReportsFiltersState = {

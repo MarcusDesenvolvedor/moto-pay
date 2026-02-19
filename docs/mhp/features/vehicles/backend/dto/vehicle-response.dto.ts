@@ -3,7 +3,6 @@ export class VehicleResponseDto {
   name: string;
   plate?: string;
   note?: string;
-  companyId: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

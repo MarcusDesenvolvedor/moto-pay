@@ -24,44 +24,30 @@ export class TransactionsService {
     createTransactionDto: CreateTransactionDto,
   ): Promise<TransactionResponseDto> {
     try {
-      // Validate that user belongs to the company
-      const companyUser = await this.prisma.companyUser.findFirst({
+      const company = await this.prisma.company.findFirst({
         where: {
-          companyId: createTransactionDto.companyId,
-          userId: userId,
-        },
-        include: {
-          company: true,
+          id: createTransactionDto.companyId,
+          userId,
+          deletedAt: null,
         },
       });
 
-      if (!companyUser) {
-        throw new ForbiddenException(
-          `User ${userId} does not belong to company ${createTransactionDto.companyId}`,
-        );
+      if (!company) {
+        throw new NotFoundException('Company not found');
       }
 
-      // Check if company is deleted
-      if (companyUser.company.deletedAt) {
-        throw new NotFoundException('Company not found or deleted');
-      }
-
-      // Validate vehicle (required)
       const vehicle = await this.prisma.vehicle.findFirst({
         where: {
           id: createTransactionDto.vehicleId,
-          companyId: createTransactionDto.companyId,
+          userId,
           deletedAt: null,
         },
       });
 
       if (!vehicle) {
-        throw new NotFoundException(
-          `Vehicle ${createTransactionDto.vehicleId} not found or does not belong to company`,
-        );
+        throw new NotFoundException('Vehicle not found');
       }
 
-      // Create transaction entity
       const transaction = Transaction.create(
         createTransactionDto.companyId,
         createTransactionDto.type,
@@ -72,10 +58,8 @@ export class TransactionsService {
         createTransactionDto.recordDate,
       );
 
-      // Save transaction
       const savedTransaction = await this.transactionRepository.save(transaction);
 
-      // Map to response DTO
       return this.toResponseDto(savedTransaction);
     } catch (error) {
       console.error('Error creating transaction:', error);
@@ -87,22 +71,17 @@ export class TransactionsService {
   }
 
   async getUserCompanies(userId: string): Promise<CompanyResponseDto[]> {
-    const companyUsers = await this.prisma.companyUser.findMany({
+    const companies = await this.prisma.company.findMany({
       where: {
-        userId: userId,
-        company: {
-          deletedAt: null,
-        },
-      },
-      include: {
-        company: true,
+        userId,
+        deletedAt: null,
       },
     });
 
-    return companyUsers.map((cu) => ({
-      id: cu.company.id,
-      name: cu.company.name,
-      document: cu.company.document || undefined,
+    return companies.map((c) => ({
+      id: c.id,
+      name: c.name,
+      document: c.document || undefined,
     }));
   }
 

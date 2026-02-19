@@ -106,7 +106,7 @@ export function ReportsFiltersModal({
     initialFilters.vehicleId,
   ]);
 
-  const companyVehicles = vehicles.filter((v) => v.companyId === companyId);
+  const companyVehicles = vehicles;
 
   const handleApply = () => {
     onApply({ companyId, period, vehicleId: companyId ? vehicleId : null });

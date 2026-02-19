@@ -223,9 +223,7 @@ export function AddTransactionScreen() {
 
   const selectedCompany = companies?.find((c) => c.id === companyId);
   const selectedVehicle = vehicles?.find((v) => v.id === vehicleId);
-  
-  // Filter vehicles by selected company
-  const availableVehicles = vehicles?.filter((v) => v.companyId === companyId) || [];
+  const availableVehicles = vehicles || [];
 
   if (isLoadingCompanies) {
     return (
@@ -326,32 +324,30 @@ export function AddTransactionScreen() {
             )}
           </View>
 
-          {/* Vehicle Picker - Only show if company is selected */}
-          {companyId && (
-            <View style={styles.section}>
-              <Text style={styles.label}>Vehicle *</Text>
-              <TouchableOpacity
-                onPress={() => setShowVehiclePicker(true)}
+          {/* Vehicle Picker */}
+          <View style={styles.section}>
+            <Text style={styles.label}>Vehicle *</Text>
+            <TouchableOpacity
+              onPress={() => setShowVehiclePicker(true)}
+              style={[
+                styles.pickerButton,
+                errors.vehicleId && styles.pickerButtonError,
+              ]}
+            >
+              <Text
                 style={[
-                  styles.pickerButton,
-                  errors.vehicleId && styles.pickerButtonError,
+                  styles.pickerButtonText,
+                  !selectedVehicle && styles.pickerButtonPlaceholder,
                 ]}
               >
-                <Text
-                  style={[
-                    styles.pickerButtonText,
-                    !selectedVehicle && styles.pickerButtonPlaceholder,
-                  ]}
-                >
-                  {selectedVehicle ? selectedVehicle.name : 'Select a vehicle'}
-                </Text>
-                <Text style={styles.pickerButtonIcon}>▼</Text>
-              </TouchableOpacity>
-              {errors.vehicleId && (
-                <Text style={styles.errorText}>{errors.vehicleId}</Text>
-              )}
-            </View>
-          )}
+                {selectedVehicle ? selectedVehicle.name : 'Select a vehicle'}
+              </Text>
+              <Text style={styles.pickerButtonIcon}>▼</Text>
+            </TouchableOpacity>
+            {errors.vehicleId && (
+              <Text style={styles.errorText}>{errors.vehicleId}</Text>
+            )}
+          </View>
 
           {/* Amount Input */}
           <View style={styles.section}>
@@ -478,7 +474,7 @@ export function AddTransactionScreen() {
             {availableVehicles.length === 0 ? (
               <View style={styles.modalItem}>
                 <Text style={[styles.modalItemText, { color: colors.textSecondary }]}>
-                  No vehicles registered for this company
+                  No vehicles registered
                 </Text>
               </View>
             ) : (

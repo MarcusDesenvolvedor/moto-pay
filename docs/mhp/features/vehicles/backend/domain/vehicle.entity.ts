@@ -3,7 +3,7 @@ import { randomUUID } from 'crypto';
 export class Vehicle {
   constructor(
     public readonly id: string,
-    public readonly companyId: string,
+    public readonly userId: string,
     public readonly name: string,
     public readonly plate: string | null,
     public readonly note: string | null,
@@ -15,7 +15,7 @@ export class Vehicle {
   ) {}
 
   static create(
-    companyId: string,
+    userId: string,
     name: string,
     plate?: string,
     note?: string,
@@ -24,15 +24,15 @@ export class Vehicle {
 
     return new Vehicle(
       randomUUID(),
-      companyId,
+      userId,
       name,
       plate || null,
       note || null,
-      'motorcycle', // Default type, can be extended later
-      true, // Default to active
+      'motorcycle',
+      true,
       now,
       now,
-      null, // deletedAt
+      null,
     );
   }
 
@@ -44,15 +44,15 @@ export class Vehicle {
     const now = new Date();
     return new Vehicle(
       this.id,
-      this.companyId,
+      this.userId,
       this.name,
       this.plate,
       this.note,
       this.type,
       this.isActive,
       this.createdAt,
-      now, // Update updatedAt
-      now, // Set deletedAt
+      now,
+      now,
     );
   }
 }

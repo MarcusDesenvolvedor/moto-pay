@@ -12,6 +12,7 @@ export class CompanyRepository implements ICompanyRepository {
       where: { id: company.id },
       create: {
         id: company.id,
+        userId: company.userId,
         name: company.name,
         document: company.document,
         createdAt: company.createdAt,
@@ -43,6 +44,7 @@ export class CompanyRepository implements ICompanyRepository {
 
   private toDomain(prismaCompany: {
     id: string;
+    userId: string;
     name: string;
     document: string | null;
     createdAt: Date;
@@ -51,6 +53,7 @@ export class CompanyRepository implements ICompanyRepository {
   }): Company {
     return new Company(
       prismaCompany.id,
+      prismaCompany.userId,
       prismaCompany.name,
       prismaCompany.document,
       prismaCompany.createdAt,

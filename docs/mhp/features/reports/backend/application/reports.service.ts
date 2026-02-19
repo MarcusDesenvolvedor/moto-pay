@@ -19,38 +19,29 @@ export class ReportsService {
   constructor(private readonly prisma: PrismaService) {}
 
   /**
-   * Resolves the companyId to use for reports. If the provided companyId is not
-   * valid for the user (e.g. stale cache), falls back to the first company the
-   * user belongs to.
+   * Resolves the companyId to use for reports. Falls back to the user's
+   * first company if the provided one is stale/invalid.
    */
   private async resolveCompanyId(
     userId: string,
     companyId: string,
   ): Promise<string> {
-    const membership = await this.prisma.companyUser.findFirst({
-      where: {
-        userId,
-        companyId,
-        company: { deletedAt: null },
-      },
+    const company = await this.prisma.company.findFirst({
+      where: { id: companyId, userId, deletedAt: null },
+      select: { id: true },
     });
-    if (membership) {
-      return companyId;
+    if (company) {
+      return company.id;
     }
-    // Fallback: use first company user belongs to (handles stale frontend cache)
-    const firstMembership = await this.prisma.companyUser.findFirst({
-      where: {
-        userId,
-        company: { deletedAt: null },
-      },
-      select: { companyId: true },
+    const firstCompany = await this.prisma.company.findFirst({
+      where: { userId, deletedAt: null },
+      select: { id: true },
+      orderBy: { createdAt: 'asc' },
     });
-    if (!firstMembership) {
-      throw new ForbiddenException(
-        `User does not belong to any company`,
-      );
+    if (!firstCompany) {
+      throw new ForbiddenException('User has no companies');
     }
-    return firstMembership.companyId;
+    return firstCompany.id;
   }
 
   private buildDateFilter(startDate?: string, endDate?: string) {

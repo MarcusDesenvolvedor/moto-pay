@@ -1,5 +1,4 @@
 import { Injectable, Inject, ForbiddenException, NotFoundException } from '@nestjs/common';
-import { randomUUID } from 'crypto';
 import { PrismaService } from '@/shared/infrastructure/prisma/prisma.service';
 import { Company } from '../domain/company.entity';
 import { ICompanyRepository } from '../domain/company.repository.interface';
@@ -19,27 +18,14 @@ export class CompaniesService {
     createCompanyDto: CreateCompanyDto,
   ): Promise<CompanyResponseDto> {
     try {
-      // Create company entity (using description as document field)
       const company = Company.create(
+        userId,
         createCompanyDto.name,
         createCompanyDto.description || null,
       );
 
-      // Save company
       const savedCompany = await this.companyRepository.save(company);
 
-      // Create company_users record with OWNER role
-      await this.prisma.companyUser.create({
-        data: {
-          id: randomUUID(),
-          companyId: savedCompany.id,
-          userId: userId,
-          role: 'OWNER',
-          createdAt: new Date(),
-        },
-      });
-
-      // Return response DTO
       return this.toResponseDto(savedCompany);
     } catch (error) {
       console.error('Error creating company:', error);
@@ -51,27 +37,22 @@ export class CompaniesService {
 
   async getUserCompanies(userId: string): Promise<CompanyResponseDto[]> {
     try {
-      const companyUsers = await this.prisma.companyUser.findMany({
+      const companies = await this.prisma.company.findMany({
         where: {
-          userId: userId,
-          company: {
-            deletedAt: null,
-          },
-        },
-        include: {
-          company: true,
+          userId,
+          deletedAt: null,
         },
         orderBy: {
           createdAt: 'desc',
         },
       });
 
-      return companyUsers.map((cu) => ({
-        id: cu.company.id,
-        name: cu.company.name,
-        description: cu.company.document || undefined,
-        createdAt: cu.company.createdAt.toISOString(),
-        updatedAt: cu.company.updatedAt.toISOString(),
+      return companies.map((c) => ({
+        id: c.id,
+        name: c.name,
+        description: c.document || undefined,
+        createdAt: c.createdAt.toISOString(),
+        updatedAt: c.updatedAt.toISOString(),
       }));
     } catch (error) {
       console.error('Error getting user companies:', error);
@@ -86,25 +67,6 @@ export class CompaniesService {
     companyId: string,
   ): Promise<{ message: string }> {
     try {
-      // Verify user belongs to company and has OWNER role
-      const companyUser = await this.prisma.companyUser.findFirst({
-        where: {
-          companyId: companyId,
-          userId: userId,
-          role: 'OWNER',
-        },
-        include: {
-          company: true,
-        },
-      });
-
-      if (!companyUser) {
-        throw new ForbiddenException(
-          'You do not have permission to delete this company',
-        );
-      }
-
-      // Get company entity
       const company = await this.companyRepository.findById(companyId);
       if (!company) {
         throw new NotFoundException('Company not found');
@@ -114,7 +76,12 @@ export class CompaniesService {
         throw new NotFoundException('Company already deleted');
       }
 
-      // Soft delete company
+      if (company.userId !== userId) {
+        throw new ForbiddenException(
+          'You do not have permission to delete this company',
+        );
+      }
+
       const deletedCompany = company.delete();
       await this.companyRepository.save(deletedCompany);
 

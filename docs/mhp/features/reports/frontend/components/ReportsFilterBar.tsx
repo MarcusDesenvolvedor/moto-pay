@@ -15,7 +15,6 @@ import { Company } from '../../../../../../shared/api/companies.api';
 export interface VehicleFilterOption {
   id: string;
   name: string;
-  companyId: string;
 }
 
 interface ReportsFilterBarProps {
@@ -46,7 +45,7 @@ export function ReportsFilterBar({
   onVehicleChange,
 }: ReportsFilterBarProps) {
   const selectedCompany = companies.find((c) => c.id === companyId);
-  const companyVehicles = vehicles.filter((v) => v.companyId === companyId);
+  const companyVehicles = vehicles;
 
   return (
     <View style={styles.container}>

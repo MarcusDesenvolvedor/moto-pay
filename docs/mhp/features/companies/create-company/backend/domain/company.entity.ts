@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto';
 export class Company {
   constructor(
     public readonly id: string,
+    public readonly userId: string,
     public readonly name: string,
     public readonly document: string | null,
     public readonly createdAt: Date,
@@ -10,10 +11,11 @@ export class Company {
     public readonly deletedAt: Date | null,
   ) {}
 
-  static create(name: string, document?: string | null): Company {
+  static create(userId: string, name: string, document?: string | null): Company {
     const now = new Date();
     return new Company(
       randomUUID(),
+      userId,
       name.trim(),
       document?.trim() || null,
       now,
@@ -30,11 +32,12 @@ export class Company {
     const now = new Date();
     return new Company(
       this.id,
+      this.userId,
       this.name,
       this.document,
       this.createdAt,
-      now, // Update updatedAt
-      now, // Set deletedAt
+      now,
+      now,
     );
   }
 }
