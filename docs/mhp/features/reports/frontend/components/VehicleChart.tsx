@@ -19,9 +19,9 @@ export function VehicleChart({ data }: VehicleChartProps) {
   if (!data || data.length === 0) {
     return (
       <AnimatedCard style={styles.container} delay={150}>
-        <Text style={styles.title}>Por Veículo</Text>
+        <Text style={styles.title}>By Vehicle</Text>
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Nenhum dado no período selecionado</Text>
+          <Text style={styles.emptyText}>No data for the selected period</Text>
         </View>
       </AnimatedCard>
     );
@@ -40,7 +40,7 @@ export function VehicleChart({ data }: VehicleChartProps) {
 
   return (
     <AnimatedCard style={styles.container} delay={150}>
-      <Text style={styles.title}>Lucro por Veículo</Text>
+      <Text style={styles.title}>Profit by Vehicle</Text>
       <BarChart
         data={chartData}
         width={CHART_WIDTH}

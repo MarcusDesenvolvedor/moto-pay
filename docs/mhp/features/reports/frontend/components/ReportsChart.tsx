@@ -24,7 +24,7 @@ export function ReportsChart({ data }: ReportsChartProps) {
   if (!data || data.length === 0) {
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>Nenhum dado disponível</Text>
+        <Text style={styles.emptyText}>No data available</Text>
       </View>
     );
   }
@@ -42,7 +42,7 @@ export function ReportsChart({ data }: ReportsChartProps) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Ganhos vs Gastos</Text>
+      <Text style={styles.title}>Income vs Expenses</Text>
       <View style={styles.chartContainer}>
         <View style={styles.barsContainer}>
           {displayData.map((point, index) => {
@@ -76,11 +76,11 @@ export function ReportsChart({ data }: ReportsChartProps) {
       <View style={styles.legend}>
         <View style={styles.legendItem}>
           <View style={[styles.legendColor, { backgroundColor: colors.success }]} />
-          <Text style={styles.legendText}>Ganhos</Text>
+          <Text style={styles.legendText}>Income</Text>
         </View>
         <View style={styles.legendItem}>
           <View style={[styles.legendColor, { backgroundColor: colors.error }]} />
-          <Text style={styles.legendText}>Gastos</Text>
+          <Text style={styles.legendText}>Expenses</Text>
         </View>
       </View>
     </View>

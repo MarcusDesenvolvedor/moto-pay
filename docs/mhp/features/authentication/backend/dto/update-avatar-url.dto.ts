@@ -5,10 +5,10 @@ const CLOUDINARY_URL_PATTERN =
 
 export class UpdateAvatarUrlDto {
   @IsString()
-  @IsNotEmpty({ message: 'URL do avatar é obrigatória' })
+  @IsNotEmpty({ message: 'Avatar URL is required' })
   @IsUrl()
   @Matches(CLOUDINARY_URL_PATTERN, {
-    message: 'URL inválida: deve ser uma URL do Cloudinary',
+    message: 'Invalid URL: must be a Cloudinary URL',
   })
   avatarUrl: string;
 }

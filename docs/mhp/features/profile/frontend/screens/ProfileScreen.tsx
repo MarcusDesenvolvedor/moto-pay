@@ -53,22 +53,22 @@ export function ProfileScreen() {
 
   const handleLogout = () => {
     Alert.alert(
-      'Sair',
-      'Tem certeza que deseja sair?',
+      'Logout',
+      'Are you sure you want to logout?',
       [
         {
-          text: 'Cancelar',
+          text: 'Cancel',
           style: 'cancel',
         },
         {
-          text: 'Sair',
+          text: 'Logout',
           style: 'destructive',
           onPress: async () => {
             try {
               await logoutMutation.mutateAsync();
               // Navigation will be handled by App.tsx based on isAuthenticated state
             } catch (error) {
-              Alert.alert('Erro', 'Não foi possível fazer logout. Tente novamente.');
+              Alert.alert('Error', 'Could not logout. Please try again.');
             }
           },
         },
@@ -94,7 +94,7 @@ export function ProfileScreen() {
 
   const handleTerms = () => {
     // TODO: Navigate to terms screen
-    Alert.alert('Em breve', 'Termos e privacidade em desenvolvimento.');
+    Alert.alert('Coming soon', 'Terms and privacy in development.');
   };
 
   if (isLoading || isLoadingAvatar) {
@@ -109,7 +109,7 @@ export function ProfileScreen() {
     return (
       <View style={styles.container}>
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Erro ao carregar perfil</Text>
+          <Text style={styles.emptyText}>Error loading profile</Text>
         </View>
       </View>
     );
@@ -137,7 +137,7 @@ export function ProfileScreen() {
           <Text style={styles.dataValue}>{user.email}</Text>
         </View>
         <View style={styles.dataItem}>
-          <Text style={styles.dataLabel}>Membro desde</Text>
+          <Text style={styles.dataLabel}>Member since</Text>
           <Text style={styles.dataValue}>{formatDate(user.createdAt)}</Text>
         </View>
       </View>
@@ -146,33 +146,33 @@ export function ProfileScreen() {
       <View style={styles.optionsSection}>
         <ProfileItem
           icon="person-outline"
-          label="Editar Perfil"
+          label="Edit Profile"
           onPress={handleEditProfile}
         />
         <ProfileItem
           icon="business-outline"
-          label="Minhas Empresas"
+          label="My Companies"
           onPress={handleMyCompanies}
         />
         <ProfileItem
           icon="car-outline"
-          label="Meus Veículos"
+          label="My Vehicles"
           onPress={handleMyVehicles}
         />
         <ProfileItem
           icon="lock-closed-outline"
-          label="Segurança"
+          label="Security"
           onPress={handleSecurity}
         />
         <ProfileItem
           icon="document-text-outline"
-          label="Termos e Privacidade"
+          label="Terms and Privacy"
           onPress={handleTerms}
         />
         <View style={styles.divider} />
         <ProfileItem
           icon="log-out-outline"
-          label="Sair"
+          label="Logout"
           onPress={handleLogout}
           variant="danger"
           showChevron={false}

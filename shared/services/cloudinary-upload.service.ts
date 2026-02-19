@@ -1,6 +1,6 @@
 /**
- * Serviço de upload direto ao Cloudinary (unsigned).
- * Usa upload preset - não expõe API secret no frontend.
+ * Direct upload service to Cloudinary (unsigned).
+ * Uses upload preset - does not expose API secret on frontend.
  * @see https://cloudinary.com/documentation/upload_images#unsigned_upload
  */
 
@@ -30,7 +30,7 @@ function getConfig() {
 
   if (!cloudName || !uploadPreset) {
     throw new CloudinaryUploadError(
-      'Configuração do Cloudinary incompleta. Verifique EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME e EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET.',
+      'Cloudinary configuration incomplete. Check EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME and EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET.',
       'UPLOAD_FAILED',
     );
   }
@@ -41,7 +41,7 @@ function getConfig() {
 function validateFileType(type: string): void {
   if (!ALLOWED_TYPES.includes(type.toLowerCase())) {
     throw new CloudinaryUploadError(
-      `Tipo de arquivo não permitido. Use: ${ALLOWED_TYPES.join(', ')}`,
+      `File type not allowed. Use: ${ALLOWED_TYPES.join(', ')}`,
       'INVALID_TYPE',
     );
   }
@@ -50,17 +50,17 @@ function validateFileType(type: string): void {
 function validateFileSize(size: number): void {
   if (size > MAX_FILE_SIZE_BYTES) {
     throw new CloudinaryUploadError(
-      `Arquivo muito grande. Máximo: ${MAX_FILE_SIZE_BYTES / 1024 / 1024}MB`,
+      `File too large. Maximum: ${MAX_FILE_SIZE_BYTES / 1024 / 1024}MB`,
       'FILE_TOO_LARGE',
     );
   }
 }
 
 /**
- * Upload de imagem para o Cloudinary via API REST (unsigned).
- * @param fileUri - URI local (file://) ou blob URL (web)
- * @param folder - Pasta opcional (via upload preset)
- * @returns secure_url da imagem
+ * Upload image to Cloudinary via REST API (unsigned).
+ * @param fileUri - Local URI (file://) or blob URL (web)
+ * @param folder - Optional folder (via upload preset)
+ * @returns image secure_url
  */
 export async function uploadImageToCloudinary(
   fileUri: string,
@@ -101,14 +101,14 @@ export async function uploadImageToCloudinary(
   if (!uploadResponse.ok) {
     const errData = await uploadResponse.json().catch(() => ({}));
     throw new CloudinaryUploadError(
-      errData?.error?.message || `Upload falhou: ${uploadResponse.status}`,
+      errData?.error?.message || `Upload failed: ${uploadResponse.status}`,
       'UPLOAD_FAILED',
     );
   }
 
   const result = (await uploadResponse.json()) as CloudinaryUploadResult;
   if (!result?.secure_url) {
-    throw new CloudinaryUploadError('Cloudinary não retornou URL', 'UPLOAD_FAILED');
+    throw new CloudinaryUploadError('Cloudinary did not return URL', 'UPLOAD_FAILED');
   }
 
   return result.secure_url;

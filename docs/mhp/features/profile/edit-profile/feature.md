@@ -20,7 +20,7 @@ Allow authenticated users to edit their basic profile information, including nam
 
 ## User Flow
 
-1. User navigates from Profile screen → taps "Editar Perfil"
+1. User navigates from Profile screen → taps "Edit Profile"
 2. Screen loads current user data
 3. Form displays:
    - Current avatar (editable)
@@ -30,7 +30,7 @@ Allow authenticated users to edit their basic profile information, including nam
    - Tap avatar to change photo
    - Edit name field
    - View email (cannot edit)
-5. User taps "Salvar"
+5. User taps "Save"
 6. System validates input
 7. System saves changes
 8. System shows success feedback

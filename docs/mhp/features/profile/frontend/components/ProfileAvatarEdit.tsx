@@ -32,8 +32,8 @@ export function ProfileAvatarEdit({
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert(
-          'Permissão necessária',
-          'Precisamos de permissão para acessar suas fotos.',
+          'Permission required',
+          'We need permission to access your photos.',
         );
         return;
       }
@@ -66,14 +66,14 @@ export function ProfileAvatarEdit({
           onImageSelected?.(manipulatedImage.uri);
         } catch (error) {
           console.error('Error processing image:', error);
-          Alert.alert('Erro', 'Não foi possível processar a imagem.');
+          Alert.alert('Error', 'Could not process the image.');
         } finally {
           setIsPicking(false);
         }
       }
     } catch (error) {
       console.error('Error picking image:', error);
-      Alert.alert('Erro', 'Não foi possível selecionar a imagem.');
+      Alert.alert('Error', 'Could not select the image.');
     }
   };
 

@@ -15,7 +15,7 @@ Allow authenticated users to create financial transactions (gains or expenses) t
 ## User Flow
 
 1. User navigates to "Add" tab
-2. User selects transaction type (Ganho/Despesa) via toggle
+2. User selects transaction type (Income/Expense) via toggle
 3. User selects a company from dropdown (only companies they belong to)
 4. User enters amount (BRL currency, masked input)
 5. User toggles "Paid" status (optional, defaults to false)
@@ -115,12 +115,12 @@ Fetches all companies the authenticated user belongs to.
 - Yellow border on focused inputs
 
 ### Components
-1. **Toggle/Segmented Control**: Switch between "Ganho" and "Despesa"
+1. **Toggle/Segmented Control**: Switch between "Income" and "Expense"
 2. **Company Picker**: Dropdown showing user's companies
 3. **Amount Input**: Currency masked input (R$ format)
-4. **Paid Toggle**: Boolean switch with label "Pago"
+4. **Paid Toggle**: Boolean switch with label "Paid"
 5. **Note Input**: Optional text area
-6. **Submit Button**: "Salvar" button with loading state
+6. **Submit Button**: "Save" button with loading state
 
 ### Validation
 - Type: Required, enum("GAIN", "EXPENSE")

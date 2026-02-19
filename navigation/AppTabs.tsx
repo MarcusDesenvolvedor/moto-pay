@@ -58,7 +58,7 @@ export function AppTabs() {
         options={{
           tabBarLabel: ({ focused, color }) => (
             <AnimatedTabLabel
-              label="Veículos"
+              label="Vehicles"
               focused={focused}
               style={[styles.tabBarLabel, { color }]}
             />
@@ -79,7 +79,7 @@ export function AppTabs() {
         options={{
           tabBarLabel: ({ focused, color }) => (
             <AnimatedTabLabel
-              label="Adicionar"
+              label="Add"
               focused={focused}
               style={[styles.tabBarLabel, { color }]}
             />
@@ -100,7 +100,7 @@ export function AppTabs() {
         options={{
           tabBarLabel: ({ focused, color }) => (
             <AnimatedTabLabel
-              label="Perfil"
+              label="Profile"
               focused={focused}
               style={[styles.tabBarLabel, { color }]}
             />

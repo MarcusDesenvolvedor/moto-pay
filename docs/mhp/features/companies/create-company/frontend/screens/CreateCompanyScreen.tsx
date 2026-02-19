@@ -22,7 +22,7 @@ import { typography } from '../../../../../../../shared/theme/typography';
 import { spacing } from '../../../../../../../shared/theme/spacing';
 
 const createCompanySchema = z.object({
-  name: z.string().min(1, 'Nome da empresa é obrigatório'),
+  name: z.string().min(1, 'Company name is required'),
   description: z.string().optional(),
 });
 
@@ -51,7 +51,7 @@ export function CreateCompanyScreen() {
         description: data.description || undefined,
       });
 
-      Alert.alert('Sucesso', 'Empresa criada com sucesso!', [
+      Alert.alert('Success', 'Company created successfully!', [
         {
           text: 'OK',
           onPress: () => {
@@ -63,8 +63,8 @@ export function CreateCompanyScreen() {
       const errorMessage =
         error?.response?.data?.message ||
         error?.message ||
-        'Não foi possível criar a empresa. Tente novamente.';
-      Alert.alert('Erro', errorMessage);
+        'Could not create company. Please try again.';
+      Alert.alert('Error', errorMessage);
     }
   };
 
@@ -86,12 +86,12 @@ export function CreateCompanyScreen() {
             name="name"
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
-                label="Nome da Empresa *"
+                label="Company Name *"
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 error={errors.name?.message}
-                placeholder="Ex: MotoPay Delivery, Uber Moto"
+                placeholder="e.g. MotoPay Delivery, Uber Moto"
                 autoCapitalize="words"
               />
             )}
@@ -104,7 +104,7 @@ export function CreateCompanyScreen() {
             name="description"
             render={({ field: { onChange, onBlur, value } }) => (
               <View>
-                <Text style={styles.label}>Descrição (opcional)</Text>
+                <Text style={styles.label}>Description (optional)</Text>
                 <TextInput
                   style={[
                     styles.textArea,
@@ -113,7 +113,7 @@ export function CreateCompanyScreen() {
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
-                  placeholder="Descreva sua empresa..."
+                  placeholder="Describe your company..."
                   placeholderTextColor={colors.textSecondary}
                   multiline
                   numberOfLines={4}
@@ -133,7 +133,7 @@ export function CreateCompanyScreen() {
         {createCompanyMutation.error && (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>
-              {createCompanyMutation.error.message || 'Erro ao criar empresa'}
+              {createCompanyMutation.error.message || 'Error creating company'}
             </Text>
           </View>
         )}
@@ -141,7 +141,7 @@ export function CreateCompanyScreen() {
         {/* Submit Button */}
         <View style={styles.buttonContainer}>
           <Button
-            title="Criar Empresa"
+            title="Create Company"
             onPress={handleSubmit(onSubmit)}
             disabled={createCompanyMutation.isPending}
             loading={createCompanyMutation.isPending}

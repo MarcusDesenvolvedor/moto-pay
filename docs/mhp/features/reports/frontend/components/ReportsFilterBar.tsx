@@ -30,9 +30,9 @@ interface ReportsFilterBarProps {
 }
 
 const PERIOD_OPTIONS: { value: PeriodPreset; label: string }[] = [
-  { value: 'day', label: 'Hoje' },
-  { value: 'week', label: 'Semana' },
-  { value: 'month', label: 'Mês' },
+  { value: 'day', label: 'Today' },
+  { value: 'week', label: 'Week' },
+  { value: 'month', label: 'Month' },
 ];
 
 export function ReportsFilterBar({
@@ -51,7 +51,7 @@ export function ReportsFilterBar({
   return (
     <View style={styles.container}>
       <View style={styles.section}>
-        <Text style={styles.label}>Empresa</Text>
+        <Text style={styles.label}>Company</Text>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -82,7 +82,7 @@ export function ReportsFilterBar({
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.label}>Período</Text>
+        <Text style={styles.label}>Period</Text>
         <View style={styles.chipRow}>
           {PERIOD_OPTIONS.map((opt) => (
             <TouchableOpacity
@@ -106,7 +106,7 @@ export function ReportsFilterBar({
 
       {companyId && companyVehicles.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.label}>Veículo (filtro categoria)</Text>
+          <Text style={styles.label}>Vehicle (category filter)</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -123,7 +123,7 @@ export function ReportsFilterBar({
                   !vehicleId && styles.chipTextActive,
                 ]}
               >
-                Todos
+                All
               </Text>
             </TouchableOpacity>
             {companyVehicles.map((v) => (

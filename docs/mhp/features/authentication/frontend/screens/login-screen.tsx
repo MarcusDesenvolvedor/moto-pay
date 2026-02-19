@@ -43,15 +43,15 @@ export function LoginScreen() {
     const newErrors: { email?: string; password?: string } = {};
 
     if (!email.trim()) {
-      newErrors.email = 'Email é obrigatório';
+      newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Email inválido';
+      newErrors.email = 'Invalid email';
     }
 
     if (!password) {
-      newErrors.password = 'Senha é obrigatória';
+      newErrors.password = 'Password is required';
     } else if (password.length < 8) {
-      newErrors.password = 'Senha deve ter no mínimo 8 caracteres';
+      newErrors.password = 'Password must be at least 8 characters';
     }
 
     setErrors(newErrors);
@@ -66,26 +66,26 @@ export function LoginScreen() {
     try {
       await loginMutation.mutateAsync({ email, password });
     } catch (error: unknown) {
-      let errorMessage = 'Erro ao fazer login. Tente novamente.';
+      let errorMessage = 'Login failed. Please try again.';
       
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { data?: { message?: string }; status?: number } };
         if (axiosError.response?.status === 401) {
-          errorMessage = 'Credenciais inválidas. Verifique seu email e senha.';
+          errorMessage = 'Invalid credentials. Please check your email and password.';
         } else if (axiosError.response?.data?.message) {
           errorMessage = axiosError.response.data.message;
         } else if (axiosError.response?.status === 404 || axiosError.response?.status === 0) {
-          errorMessage = 'Erro de conexão. Verifique se o servidor está rodando.';
+          errorMessage = 'Connection error. Please verify the server is running.';
         }
       } else if (error instanceof Error) {
         if (error.message.includes('Network Error') || error.message.includes('timeout')) {
-          errorMessage = 'Erro de rede. Verifique sua conexão e se o servidor está acessível.';
+          errorMessage = 'Network error. Check your connection and server availability.';
         } else {
           errorMessage = error.message;
         }
       }
       
-      Alert.alert('Erro ao fazer login', errorMessage);
+      Alert.alert('Login Error', errorMessage);
     }
   };
 
@@ -101,7 +101,7 @@ export function LoginScreen() {
         <View style={styles.content}>
           <AuthHeader
             title="MotoPay"
-            subtitle="Faça login para continuar"
+            subtitle="Sign in to continue"
           />
 
           <View style={styles.form}>
@@ -114,7 +114,7 @@ export function LoginScreen() {
                   setErrors({ ...errors, email: undefined });
                 }
               }}
-              placeholder="seu@email.com"
+              placeholder="your@email.com"
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
@@ -122,7 +122,7 @@ export function LoginScreen() {
             />
 
             <Input
-              label="Senha"
+              label="Password"
               value={password}
               onChangeText={(text) => {
                 setPassword(text);
@@ -130,7 +130,7 @@ export function LoginScreen() {
                   setErrors({ ...errors, password: undefined });
                 }
               }}
-              placeholder="Digite sua senha"
+              placeholder="Enter your password"
               secureTextEntry
               autoCapitalize="none"
               error={errors.password}
@@ -140,23 +140,23 @@ export function LoginScreen() {
               style={styles.forgotPassword}
               onPress={() => {
                 Alert.alert(
-                  'Recuperação de senha',
+                  'Password Recovery',
                   'Password recovery will be available soon.',
                 );
               }}
             >
-              Esqueceu sua senha?
+              Forgot your password?
             </Text>
 
             <Button
-              title="Entrar"
+              title="Sign In"
               onPress={handleLogin}
               loading={loginMutation.isPending}
               style={styles.button}
             />
 
             <Button
-              title="Criar conta"
+              title="Create account"
               onPress={() => navigation.navigate('Register')}
               variant="outline"
               style={styles.button}

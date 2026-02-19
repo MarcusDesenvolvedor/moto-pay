@@ -16,7 +16,7 @@ Allow authenticated users to create a new company that will be used for transact
 2. User fills form:
    - Company Name (required)
    - Description (optional)
-3. User taps "Criar Empresa"
+3. User taps "Create Company"
 4. System validates input
 5. System creates company
 6. System creates company_users record with role = 'OWNER'
@@ -80,7 +80,7 @@ Creates a new company and links the authenticated user as OWNER.
 ### Components
 1. **Name Input**: Text input with label
 2. **Description Input**: Multiline text input with label
-3. **Submit Button**: "Criar Empresa" button
+3. **Submit Button**: "Create Company" button
 
 ### UX Behavior
 - Loading state while submitting

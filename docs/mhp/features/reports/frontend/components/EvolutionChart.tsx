@@ -20,9 +20,9 @@ export function EvolutionChart({ data }: EvolutionChartProps) {
   if (!data || data.length === 0) {
     return (
       <AnimatedCard style={styles.container}>
-        <Text style={styles.title}>Evolução Receitas x Despesas</Text>
+        <Text style={styles.title}>Income vs Expenses Evolution</Text>
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Nenhum dado no período selecionado</Text>
+          <Text style={styles.emptyText}>No data for the selected period</Text>
         </View>
       </AnimatedCard>
     );
@@ -36,14 +36,14 @@ export function EvolutionChart({ data }: EvolutionChartProps) {
 
   const chartData = {
     labels,
-    legend: ['Receitas', 'Despesas'],
+    legend: ['Income', 'Expenses'],
     data: displayData.map((d) => [d.income, d.expense]),
     barColors: [colors.success, colors.error],
   };
 
   return (
     <AnimatedCard style={styles.container} delay={50}>
-      <Text style={styles.title}>Evolução Receitas x Despesas</Text>
+      <Text style={styles.title}>Income vs Expenses Evolution</Text>
       <StackedBarChart
         data={chartData}
         width={CHART_WIDTH}
@@ -56,11 +56,11 @@ export function EvolutionChart({ data }: EvolutionChartProps) {
       <View style={styles.legend}>
         <View style={styles.legendItem}>
           <View style={[styles.legendColor, { backgroundColor: colors.success }]} />
-          <Text style={styles.legendText}>Receitas</Text>
+          <Text style={styles.legendText}>Income</Text>
         </View>
         <View style={styles.legendItem}>
           <View style={[styles.legendColor, { backgroundColor: colors.error }]} />
-          <Text style={styles.legendText}>Despesas</Text>
+          <Text style={styles.legendText}>Expenses</Text>
         </View>
       </View>
     </AnimatedCard>

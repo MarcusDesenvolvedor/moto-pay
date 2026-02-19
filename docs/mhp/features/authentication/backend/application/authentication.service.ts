@@ -228,7 +228,7 @@ export class AuthenticationService {
       if (error instanceof UnauthorizedException || error instanceof BadRequestException) {
         throw error;
       }
-      const message = error instanceof Error ? error.message : 'Falha ao atualizar avatar';
+      const message = error instanceof Error ? error.message : 'Failed to update avatar';
       throw new InternalServerErrorException(message);
     }
   }

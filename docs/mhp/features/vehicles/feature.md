@@ -1,4 +1,4 @@
-# 🎯 Feature: Vehicle Registration (Cadastro de Veículos)
+# 🎯 Feature: Vehicle Registration
 
 ## Purpose
 
@@ -33,7 +33,7 @@ Creates a new vehicle.
 {
   "name": "Moto Principal",
   "plate": "ABC-1234",
-  "note": "Veículo principal de trabalho"
+  "note": "Main work vehicle"
 }
 ```
 
@@ -44,7 +44,7 @@ Creates a new vehicle.
     "id": "uuid",
     "name": "Moto Principal",
     "plate": "ABC-1234",
-    "note": "Veículo principal de trabalho",
+    "note": "Main work vehicle",
     "companyId": "uuid",
     "createdAt": "2024-01-15T10:30:00Z",
     "updatedAt": "2024-01-15T10:30:00Z"
@@ -63,7 +63,7 @@ Fetches all vehicles the authenticated user has access to (through company membe
       "id": "uuid",
       "name": "Moto Principal",
       "plate": "ABC-1234",
-      "note": "Veículo principal de trabalho",
+      "note": "Main work vehicle",
       "companyId": "uuid",
       "createdAt": "2024-01-15T10:30:00Z",
       "updatedAt": "2024-01-15T10:30:00Z"
@@ -124,7 +124,7 @@ Fetches all vehicles the authenticated user has access to (through company membe
 
 ### Components
 - Input components with yellow border on focus
-- Submit button: "Salvar Veículo" with loading state
+- Submit button: "Save Vehicle" with loading state
 - Success feedback after submission
 - Error handling with clear messages
 

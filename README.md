@@ -4,7 +4,7 @@
 
 Full-stack mobile application for motorcycle riders and drivers who earn income with their vehicles. Supports multi-company contexts (MEI, PJ, small fleets), vehicle and mileage data, financial records (income/expense), and reports — all scoped by company with role-based access.
 
-> **Documentação em português:** [README.pt-BR.md](README.pt-BR.md)
+> **Portuguese documentation:** [README.pt-BR.md](README.pt-BR.md)
 
 ---
 
@@ -146,9 +146,9 @@ npm run start
 ## Usage (high level)
 
 1. **Sign up / log in** — Create account or login; tokens are stored and used for all API calls.
-2. **Create a company** — From profile, open “Minhas Empresas” and create a company.
-3. **Add vehicles** — In “Meus Veículos”, add vehicles linked to the company.
-4. **Register transactions** — Use the “Adicionar” tab to add income or expense for a company and vehicle.
+2. **Create a company** — From profile, open "My Companies" and create a company.
+3. **Add vehicles** — In "My Vehicles", add vehicles linked to the company.
+4. **Register transactions** — Use the "Add" tab to add income or expense for a company and vehicle.
 5. **View reports** — Home tab shows daily summary and report chart for the selected period.
 6. **Profile & security** — Edit profile/avatar and change password or manage sessions from the profile stack.
 

@@ -230,7 +230,7 @@ export class ReportsService {
 
     for (const t of transactions) {
       const key = t.vehicleId ?? '__none__';
-      const name = t.vehicle?.name ?? 'Sem veículo';
+      const name = t.vehicle?.name ?? 'No vehicle';
       if (!byVehicle.has(key)) {
         byVehicle.set(key, { name, income: 0, expense: 0 });
       }

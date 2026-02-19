@@ -129,34 +129,34 @@ export function AddTransactionScreen() {
     const newErrors: { companyId?: string; amount?: string; recordDate?: string; vehicleId?: string } = {};
 
     if (!companyId) {
-      newErrors.companyId = 'Empresa é obrigatória';
+      newErrors.companyId = 'Company is required';
     }
 
     if (!vehicleId) {
-      newErrors.vehicleId = 'Veículo é obrigatório';
+      newErrors.vehicleId = 'Vehicle is required';
     }
 
     const numericAmount = getNumericAmount();
     if (numericAmount <= 0) {
-      newErrors.amount = 'Valor deve ser maior que zero';
+      newErrors.amount = 'Amount must be greater than zero';
     }
 
     if (!recordDate) {
-      newErrors.recordDate = 'Data é obrigatória';
+      newErrors.recordDate = 'Date is required';
     } else {
       // Validate Brazilian date format (DD/MM/YYYY)
       const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
       if (!dateRegex.test(recordDate)) {
-        newErrors.recordDate = 'Data inválida. Use o formato DD/MM/AAAA';
+        newErrors.recordDate = 'Invalid date. Use format DD/MM/YYYY';
       } else {
         // Validate if date is valid
         const isoDate = convertToISO(recordDate);
         if (!isoDate) {
-          newErrors.recordDate = 'Data inválida';
+          newErrors.recordDate = 'Invalid date';
         } else {
           const date = new Date(isoDate);
           if (isNaN(date.getTime())) {
-            newErrors.recordDate = 'Data inválida';
+            newErrors.recordDate = 'Invalid date';
           }
         }
       }
@@ -175,7 +175,7 @@ export function AddTransactionScreen() {
       // Convert Brazilian date to ISO format
       const isoDate = convertToISO(recordDate);
       if (!isoDate) {
-        setErrors({ ...errors, recordDate: 'Data inválida' });
+        setErrors({ ...errors, recordDate: 'Invalid date' });
         return;
       }
 
@@ -205,9 +205,9 @@ export function AddTransactionScreen() {
       setVehicleId('');
       setErrors({});
 
-      Alert.alert('Sucesso', 'Transação criada com sucesso!');
+      Alert.alert('Success', 'Transaction created successfully!');
     } catch (error: unknown) {
-      let errorMessage = 'Erro ao criar transação. Tente novamente.';
+      let errorMessage = 'Could not create transaction. Please try again.';
       
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { data?: { message?: string }; status?: number } };
@@ -216,7 +216,7 @@ export function AddTransactionScreen() {
         }
       }
       
-      Alert.alert('Erro', errorMessage);
+      Alert.alert('Error', errorMessage);
     }
   };
 
@@ -239,10 +239,10 @@ export function AddTransactionScreen() {
       <View style={styles.container}>
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
-            Você não possui empresas cadastradas.
+            You have no registered companies.
           </Text>
           <Text style={styles.emptySubtext}>
-            Crie uma empresa para começar a adicionar transações.
+            Create a company to start adding transactions.
           </Text>
         </View>
       </View>
@@ -259,11 +259,11 @@ export function AddTransactionScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.content}>
-          <Text style={styles.title}>Nova Transação</Text>
+          <Text style={styles.title}>New Transaction</Text>
 
           {/* Type Toggle */}
           <View style={styles.section}>
-            <Text style={styles.label}>Tipo</Text>
+            <Text style={styles.label}>Type</Text>
             <View style={styles.toggleContainer}>
               <TouchableOpacity
                 style={[
@@ -278,7 +278,7 @@ export function AddTransactionScreen() {
                     type === TransactionType.GAIN && styles.toggleTextActive,
                   ]}
                 >
-                  Ganho
+                  Income
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -294,7 +294,7 @@ export function AddTransactionScreen() {
                     type === TransactionType.EXPENSE && styles.toggleTextActive,
                   ]}
                 >
-                  Despesa
+                  Expense
                 </Text>
               </TouchableOpacity>
             </View>
@@ -302,7 +302,7 @@ export function AddTransactionScreen() {
 
           {/* Company Picker */}
           <View style={styles.section}>
-            <Text style={styles.label}>Empresa *</Text>
+            <Text style={styles.label}>Company *</Text>
             <TouchableOpacity
               onPress={() => setShowCompanyPicker(true)}
               style={[
@@ -316,7 +316,7 @@ export function AddTransactionScreen() {
                   !selectedCompany && styles.pickerButtonPlaceholder,
                 ]}
               >
-                {selectedCompany ? selectedCompany.name : 'Selecione uma empresa'}
+                {selectedCompany ? selectedCompany.name : 'Select a company'}
               </Text>
               <Text style={styles.pickerButtonIcon}>▼</Text>
             </TouchableOpacity>
@@ -328,7 +328,7 @@ export function AddTransactionScreen() {
           {/* Vehicle Picker - Only show if company is selected */}
           {companyId && (
             <View style={styles.section}>
-              <Text style={styles.label}>Veículo *</Text>
+              <Text style={styles.label}>Vehicle *</Text>
               <TouchableOpacity
                 onPress={() => setShowVehiclePicker(true)}
                 style={[
@@ -342,7 +342,7 @@ export function AddTransactionScreen() {
                     !selectedVehicle && styles.pickerButtonPlaceholder,
                   ]}
                 >
-                  {selectedVehicle ? selectedVehicle.name : 'Selecione um veículo'}
+                  {selectedVehicle ? selectedVehicle.name : 'Select a vehicle'}
                 </Text>
                 <Text style={styles.pickerButtonIcon}>▼</Text>
               </TouchableOpacity>
@@ -355,7 +355,7 @@ export function AddTransactionScreen() {
           {/* Amount Input */}
           <View style={styles.section}>
             <Input
-              label="Valor *"
+              label="Amount *"
               value={amount}
               onChangeText={handleAmountChange}
               placeholder="R$ 0,00"
@@ -367,7 +367,7 @@ export function AddTransactionScreen() {
           {/* Date Input */}
           <View style={styles.section}>
             <Input
-              label="Data *"
+              label="Date *"
               value={recordDate}
               onChangeText={handleDateChange}
               placeholder="DD/MM/AAAA"
@@ -381,7 +381,7 @@ export function AddTransactionScreen() {
           {type === TransactionType.GAIN && (
             <View style={styles.section}>
               <View style={styles.switchContainer}>
-                <Text style={styles.switchLabel}>Você recebeu o dinheiro?</Text>
+                <Text style={styles.switchLabel}>Did you receive the money?</Text>
                 <Switch
                   value={paid}
                   onValueChange={setPaid}
@@ -395,10 +395,10 @@ export function AddTransactionScreen() {
           {/* Note Input */}
           <View style={styles.section}>
             <Input
-              label="Observação (opcional)"
+              label="Note (optional)"
               value={note}
               onChangeText={setNote}
-              placeholder="Adicione uma observação..."
+              placeholder="Add a note..."
               multiline
               numberOfLines={3}
               style={styles.noteInput}
@@ -407,7 +407,7 @@ export function AddTransactionScreen() {
 
           {/* Submit Button */}
           <Button
-            title="Salvar"
+            title="Save"
             onPress={handleSubmit}
             loading={createTransactionMutation.isPending}
             style={styles.submitButton}
@@ -425,7 +425,7 @@ export function AddTransactionScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Selecione uma empresa</Text>
+              <Text style={styles.modalTitle}>Select a company</Text>
               <TouchableOpacity
                 onPress={() => setShowCompanyPicker(false)}
                 style={styles.modalCloseButton}
@@ -466,7 +466,7 @@ export function AddTransactionScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Selecione um veículo</Text>
+              <Text style={styles.modalTitle}>Select a vehicle</Text>
               <TouchableOpacity
                 onPress={() => setShowVehiclePicker(false)}
                 style={styles.modalCloseButton}
@@ -477,7 +477,7 @@ export function AddTransactionScreen() {
             {availableVehicles.length === 0 ? (
               <View style={styles.modalItem}>
                 <Text style={[styles.modalItemText, { color: colors.textSecondary }]}>
-                  Nenhum veículo cadastrado para esta empresa
+                  No vehicles registered for this company
                 </Text>
               </View>
             ) : (
@@ -494,7 +494,7 @@ export function AddTransactionScreen() {
                 >
                   <Text style={styles.modalItemText}>{item.name}</Text>
                   {item.plate && (
-                    <Text style={styles.modalItemSubtext}>Placa: {item.plate}</Text>
+                    <Text style={styles.modalItemSubtext}>Plate: {item.plate}</Text>
                   )}
                 </TouchableOpacity>
               )}

@@ -119,7 +119,7 @@ import { stackTransitionConfig } from '../shared/animations/transitions';
 import { AnimatedButton } from '../shared/components/animated';
 
 <AnimatedButton
-  title="Salvar"
+  title="Save"
   onPress={handleSave}
   variant="primary"
 />

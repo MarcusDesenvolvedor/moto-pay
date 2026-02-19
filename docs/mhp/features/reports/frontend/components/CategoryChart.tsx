@@ -26,9 +26,9 @@ export function CategoryChart({ data }: CategoryChartProps) {
   if (!data || data.length === 0) {
     return (
       <AnimatedCard style={styles.container} delay={100}>
-        <Text style={styles.title}>Por Categoria</Text>
+        <Text style={styles.title}>By Category</Text>
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Nenhum dado no período selecionado</Text>
+          <Text style={styles.emptyText}>No data for the selected period</Text>
         </View>
       </AnimatedCard>
     );
@@ -44,7 +44,7 @@ export function CategoryChart({ data }: CategoryChartProps) {
 
   return (
     <AnimatedCard style={styles.container} delay={100}>
-      <Text style={styles.title}>Por Categoria</Text>
+      <Text style={styles.title}>By Category</Text>
       <PieChart
         data={chartData}
         width={CHART_SIZE}

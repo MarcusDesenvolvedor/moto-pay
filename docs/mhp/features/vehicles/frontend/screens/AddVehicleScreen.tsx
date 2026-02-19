@@ -21,7 +21,7 @@ import { typography } from '../../../../../../shared/theme/typography';
 import { spacing } from '../../../../../../shared/theme/spacing';
 
 const vehicleSchema = z.object({
-  name: z.string().min(1, 'Nome do veículo é obrigatório'),
+  name: z.string().min(1, 'Vehicle name is required'),
   plate: z.string().optional(),
   note: z.string().optional(),
 });
@@ -58,9 +58,9 @@ export function AddVehicleScreen() {
       // Reset form after success
       reset();
 
-      Alert.alert('Sucesso', 'Veículo cadastrado com sucesso!');
+      Alert.alert('Success', 'Vehicle registered successfully!');
     } catch (error: unknown) {
-      let errorMessage = 'Erro ao cadastrar veículo. Tente novamente.';
+      let errorMessage = 'Could not register vehicle. Please try again.';
 
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as {
@@ -71,7 +71,7 @@ export function AddVehicleScreen() {
         }
       }
 
-      Alert.alert('Erro', errorMessage);
+      Alert.alert('Error', errorMessage);
     }
   };
 
@@ -85,7 +85,7 @@ export function AddVehicleScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.content}>
-          <Text style={styles.title}>Cadastrar Veículo</Text>
+          <Text style={styles.title}>Register Vehicle</Text>
 
           {/* Vehicle Name Input */}
           <View style={styles.section}>
@@ -94,11 +94,11 @@ export function AddVehicleScreen() {
               name="name"
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
-                  label="Nome do Veículo *"
+                  label="Vehicle Name *"
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
-                  placeholder="Ex: Moto Principal, CG 160, XRE 300"
+                  placeholder="e.g. Main Bike, CG 160, XRE 300"
                   error={errors.name?.message}
                 />
               )}
@@ -112,7 +112,7 @@ export function AddVehicleScreen() {
               name="plate"
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
-                  label="Placa (opcional)"
+                  label="License Plate (optional)"
                   value={value || ''}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -130,11 +130,11 @@ export function AddVehicleScreen() {
               name="note"
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
-                  label="Observação (opcional)"
+                  label="Note (optional)"
                   value={value || ''}
                   onChangeText={onChange}
                   onBlur={onBlur}
-                  placeholder="Adicione uma observação..."
+                  placeholder="Add a note..."
                   multiline
                   numberOfLines={3}
                   style={styles.noteInput}
@@ -146,7 +146,7 @@ export function AddVehicleScreen() {
 
           {/* Submit Button */}
           <Button
-            title="Salvar Veículo"
+            title="Save Vehicle"
             onPress={handleSubmit(onSubmit)}
             loading={createVehicleMutation.isPending}
             style={styles.submitButton}

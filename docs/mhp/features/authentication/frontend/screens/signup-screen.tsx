@@ -51,25 +51,25 @@ export function SignupScreen() {
     } = {};
 
     if (!fullName.trim()) {
-      newErrors.fullName = 'Nome completo é obrigatório';
+      newErrors.fullName = 'Full name is required';
     }
 
     if (!email.trim()) {
-      newErrors.email = 'Email é obrigatório';
+      newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Email inválido';
+      newErrors.email = 'Invalid email';
     }
 
     if (!password) {
-      newErrors.password = 'Senha é obrigatória';
+      newErrors.password = 'Password is required';
     } else if (password.length < 8) {
-      newErrors.password = 'Senha deve ter no mínimo 8 caracteres';
+      newErrors.password = 'Password must be at least 8 characters';
     }
 
     if (!confirmPassword) {
-      newErrors.confirmPassword = 'Confirmação de senha é obrigatória';
+      newErrors.confirmPassword = 'Password confirmation is required';
     } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'As senhas não coincidem';
+      newErrors.confirmPassword = 'Passwords do not match';
     }
 
     setErrors(newErrors);
@@ -83,33 +83,33 @@ export function SignupScreen() {
 
     try {
       await signupMutation.mutateAsync({ email, password, fullName });
-      Alert.alert('Sucesso', 'Conta criada com sucesso!', [
+      Alert.alert('Success', 'Account created successfully!', [
         {
           text: 'OK',
           onPress: () => navigation.navigate('Login'),
         },
       ]);
     } catch (error: unknown) {
-      let errorMessage = 'Erro ao criar conta. Tente novamente.';
+      let errorMessage = 'Could not create account. Please try again.';
       
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { data?: { message?: string }; status?: number } };
         if (axiosError.response?.status === 409) {
-          errorMessage = 'Este email já está cadastrado.';
+          errorMessage = 'This email is already registered.';
         } else if (axiosError.response?.data?.message) {
           errorMessage = axiosError.response.data.message;
         } else if (axiosError.response?.status === 404 || axiosError.response?.status === 0) {
-          errorMessage = 'Erro de conexão. Verifique se o servidor está rodando.';
+          errorMessage = 'Connection error. Please verify the server is running.';
         }
       } else if (error instanceof Error) {
         if (error.message.includes('Network Error') || error.message.includes('timeout')) {
-          errorMessage = 'Erro de rede. Verifique sua conexão e se o servidor está acessível.';
+          errorMessage = 'Network error. Check your connection and server availability.';
         } else {
           errorMessage = error.message;
         }
       }
       
-      Alert.alert('Erro ao criar conta', errorMessage);
+      Alert.alert('Create Account Error', errorMessage);
     }
   };
 
@@ -123,12 +123,12 @@ export function SignupScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.content}>
-          <Text style={styles.title}>Criar Conta</Text>
-          <Text style={styles.subtitle}>Preencha os dados para começar</Text>
+          <Text style={styles.title}>Create Account</Text>
+          <Text style={styles.subtitle}>Fill in the data to get started</Text>
 
           <View style={styles.form}>
             <Input
-              label="Nome Completo"
+              label="Full Name"
               value={fullName}
               onChangeText={(text) => {
                 setFullName(text);
@@ -136,7 +136,7 @@ export function SignupScreen() {
                   setErrors({ ...errors, fullName: undefined });
                 }
               }}
-              placeholder="Seu nome completo"
+              placeholder="Your full name"
               autoCapitalize="words"
               error={errors.fullName}
             />
@@ -150,7 +150,7 @@ export function SignupScreen() {
                   setErrors({ ...errors, email: undefined });
                 }
               }}
-              placeholder="seu@email.com"
+              placeholder="your@email.com"
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
@@ -158,7 +158,7 @@ export function SignupScreen() {
             />
 
             <Input
-              label="Senha"
+              label="Password"
               value={password}
               onChangeText={(text) => {
                 setPassword(text);
@@ -166,14 +166,14 @@ export function SignupScreen() {
                   setErrors({ ...errors, password: undefined });
                 }
               }}
-              placeholder="Mínimo 8 caracteres"
+              placeholder="At least 8 characters"
               secureTextEntry
               autoCapitalize="none"
               error={errors.password}
             />
 
             <Input
-              label="Confirmar Senha"
+              label="Confirm Password"
               value={confirmPassword}
               onChangeText={(text) => {
                 setConfirmPassword(text);
@@ -181,21 +181,21 @@ export function SignupScreen() {
                   setErrors({ ...errors, confirmPassword: undefined });
                 }
               }}
-              placeholder="Digite a senha novamente"
+              placeholder="Enter password again"
               secureTextEntry
               autoCapitalize="none"
               error={errors.confirmPassword}
             />
 
             <Button
-              title="Criar Conta"
+              title="Create Account"
               onPress={handleSignup}
               loading={signupMutation.isPending}
               style={styles.button}
             />
 
             <Button
-              title="Já tenho conta"
+              title="I already have an account"
               onPress={() => navigation.navigate('Login')}
               variant="outline"
               style={styles.button}

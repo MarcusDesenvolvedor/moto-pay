@@ -35,8 +35,8 @@ export function Avatar({
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert(
-          'Permissão necessária',
-          'Precisamos de permissão para acessar suas fotos.',
+          'Permission required',
+          'We need permission to access your photos.',
         );
         return;
       }
@@ -83,14 +83,14 @@ export function Avatar({
           }
         } catch (error) {
           console.error('Error processing image:', error);
-          Alert.alert('Erro', 'Não foi possível processar a imagem.');
+          Alert.alert('Error', 'Could not process the image.');
         } finally {
           setIsLoading(false);
         }
       }
     } catch (error) {
       console.error('Error picking image:', error);
-      Alert.alert('Erro', 'Não foi possível selecionar a imagem.');
+      Alert.alert('Error', 'Could not select the image.');
     }
   };
 

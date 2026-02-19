@@ -50,13 +50,13 @@ export function CompaniesListScreen() {
       await deleteCompanyMutation.mutateAsync(companyToDelete.id);
       setDeleteModalVisible(false);
       setCompanyToDelete(null);
-      Alert.alert('Sucesso', 'Empresa deletada com sucesso!');
+      Alert.alert('Success', 'Company deleted successfully!');
     } catch (error: any) {
       const errorMessage =
         error?.response?.data?.message ||
         error?.message ||
-        'Não foi possível deletar a empresa. Tente novamente.';
-      Alert.alert('Erro', errorMessage);
+        'Could not delete company. Please try again.';
+      Alert.alert('Error', errorMessage);
     }
   };
 
@@ -88,12 +88,12 @@ export function CompaniesListScreen() {
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
       <Ionicons name="business-outline" size={64} color={colors.textSecondary} />
-      <Text style={styles.emptyTitle}>Nenhuma empresa cadastrada</Text>
+      <Text style={styles.emptyTitle}>No companies registered</Text>
       <Text style={styles.emptyText}>
-        Adicione sua primeira empresa para começar
+        Add your first company to get started
       </Text>
       <Button
-        title="Adicionar Empresa"
+        title="Add Company"
         onPress={handleAddCompany}
         style={styles.emptyButton}
       />
@@ -113,12 +113,12 @@ export function CompaniesListScreen() {
       <View style={styles.container}>
         <View style={styles.errorContainer}>
           <Ionicons name="alert-circle-outline" size={48} color={colors.error} />
-          <Text style={styles.errorTitle}>Erro ao carregar empresas</Text>
+          <Text style={styles.errorTitle}>Error loading companies</Text>
           <Text style={styles.errorText}>
-            {error instanceof Error ? error.message : 'Erro desconhecido'}
+            {error instanceof Error ? error.message : 'Unknown error'}
           </Text>
           <Button
-            title="Tentar Novamente"
+            title="Try Again"
             onPress={() => refetch()}
             variant="outline"
             style={styles.retryButton}
@@ -160,8 +160,8 @@ export function CompaniesListScreen() {
       {/* Delete Confirmation Modal */}
       <ConfirmDeleteModal
         visible={deleteModalVisible}
-        title="Deletar Empresa"
-        message="Tem certeza que deseja deletar a empresa"
+        title="Delete Company"
+        message="Are you sure you want to delete the company"
         itemName={companyToDelete?.name}
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

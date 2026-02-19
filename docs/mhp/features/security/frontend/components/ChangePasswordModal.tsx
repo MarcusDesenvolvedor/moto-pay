@@ -23,12 +23,12 @@ import { spacing } from '../../../../../../shared/theme/spacing';
 
 const changePasswordSchema = z
   .object({
-    currentPassword: z.string().min(1, 'Senha atual é obrigatória'),
-    newPassword: z.string().min(6, 'Nova senha deve ter no mínimo 6 caracteres'),
-    confirmPassword: z.string().min(1, 'Confirmação de senha é obrigatória'),
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newPassword: z.string().min(6, 'New password must be at least 6 characters'),
+    confirmPassword: z.string().min(1, 'Password confirmation is required'),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: 'As senhas não coincidem',
+    message: 'Passwords do not match',
     path: ['confirmPassword'],
   });
 
@@ -68,8 +68,8 @@ export function ChangePasswordModal({
       });
 
       Alert.alert(
-        'Sucesso',
-        'Senha alterada com sucesso! Você precisará fazer login novamente.',
+        'Success',
+        'Password changed successfully! You will need to sign in again.',
         [
           {
             text: 'OK',
@@ -85,8 +85,8 @@ export function ChangePasswordModal({
       const errorMessage =
         error?.response?.data?.message ||
         error?.message ||
-        'Não foi possível alterar a senha. Tente novamente.';
-      Alert.alert('Erro', errorMessage);
+        'Could not change password. Please try again.';
+      Alert.alert('Error', errorMessage);
     }
   };
 
@@ -109,7 +109,7 @@ export function ChangePasswordModal({
         <View style={styles.overlay}>
           <View style={styles.modalContent}>
             <View style={styles.header}>
-              <Text style={styles.title}>Alterar Senha</Text>
+              <Text style={styles.title}>Change Password</Text>
               <TouchableOpacity
                 onPress={handleCancel}
                 style={styles.closeButton}
@@ -127,7 +127,7 @@ export function ChangePasswordModal({
                 name="currentPassword"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <Input
-                    label="Senha Atual"
+                    label="Current Password"
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -145,7 +145,7 @@ export function ChangePasswordModal({
                 name="newPassword"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <Input
-                    label="Nova Senha"
+                    label="New Password"
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -163,7 +163,7 @@ export function ChangePasswordModal({
                 name="confirmPassword"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <Input
-                    label="Confirmar Nova Senha"
+                    label="Confirm New Password"
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -177,7 +177,7 @@ export function ChangePasswordModal({
 
             <View style={styles.footer}>
               <Button
-                title="Cancelar"
+                title="Cancel"
                 onPress={handleCancel}
                 variant="outline"
                 disabled={changePasswordMutation.isPending}
@@ -186,8 +186,8 @@ export function ChangePasswordModal({
               <Button
                 title={
                   changePasswordMutation.isPending
-                    ? 'Alterando...'
-                    : 'Alterar Senha'
+                    ? 'Changing...'
+                    : 'Change Password'
                 }
                 onPress={handleSubmit(onSubmit)}
                 disabled={changePasswordMutation.isPending}

@@ -59,7 +59,7 @@ export function ConfirmDeleteModal({
               onPress={onCancel}
               disabled={isLoading}
             >
-              <Text style={styles.cancelButtonText}>Cancelar</Text>
+              <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -68,7 +68,7 @@ export function ConfirmDeleteModal({
               disabled={isLoading}
             >
               <Text style={styles.confirmButtonText}>
-                {isLoading ? 'Deletando...' : 'Deletar'}
+                {isLoading ? 'Deleting...' : 'Delete'}
               </Text>
             </TouchableOpacity>
           </View>

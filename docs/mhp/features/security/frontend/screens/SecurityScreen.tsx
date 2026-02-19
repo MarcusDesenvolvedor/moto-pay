@@ -61,24 +61,24 @@ export function SecurityScreen() {
   const handleLogoutSession = (sessionId: string) => {
     setSessionToLogout(sessionId);
     Alert.alert(
-      'Sair da Sessão',
-      'Tem certeza que deseja sair desta sessão?',
+      'Logout Session',
+      'Are you sure you want to logout from this session?',
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Sair',
+          text: 'Logout',
           style: 'destructive',
           onPress: async () => {
             try {
               await logoutSessionMutation.mutateAsync(sessionId);
-              Alert.alert('Sucesso', 'Sessão encerrada com sucesso!');
+              Alert.alert('Success', 'Session ended successfully!');
               refetch();
             } catch (error: any) {
               const errorMessage =
                 error?.response?.data?.message ||
                 error?.message ||
-                'Não foi possível encerrar a sessão. Tente novamente.';
-              Alert.alert('Erro', errorMessage);
+                'Could not end session. Please try again.';
+              Alert.alert('Error', errorMessage);
             }
           },
         },
@@ -95,27 +95,27 @@ export function SecurityScreen() {
       await logoutAllSessionsMutation.mutateAsync();
       setLogoutAllModalVisible(false);
       Alert.alert(
-        'Sucesso',
-        'Todas as sessões foram encerradas. Você precisará fazer login novamente.',
+        'Success',
+        'All sessions have been ended. You will need to sign in again.',
       );
       refetch();
     } catch (error: any) {
       const errorMessage =
         error?.response?.data?.message ||
         error?.message ||
-        'Não foi possível encerrar as sessões. Tente novamente.';
-      Alert.alert('Erro', errorMessage);
+        'Could not end sessions. Please try again.';
+      Alert.alert('Error', errorMessage);
     }
   };
 
   const handleLogout = () => {
     Alert.alert(
-      'Sair',
-      'Tem certeza que deseja sair?',
+      'Logout',
+      'Are you sure you want to logout?',
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Sair',
+          text: 'Logout',
           style: 'destructive',
           onPress: async () => {
             try {
@@ -125,8 +125,8 @@ export function SecurityScreen() {
               const errorMessage =
                 error?.response?.data?.message ||
                 error?.message ||
-                'Não foi possível sair. Tente novamente.';
-              Alert.alert('Erro', errorMessage);
+                'Could not logout. Please try again.';
+              Alert.alert('Error', errorMessage);
             }
           },
         },
@@ -152,7 +152,7 @@ export function SecurityScreen() {
     >
       {/* Password Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>🔑 Senha</Text>
+        <Text style={styles.sectionTitle}>🔑 Password</Text>
         <TouchableOpacity
           style={styles.actionCard}
           onPress={handleChangePassword}
@@ -160,7 +160,7 @@ export function SecurityScreen() {
         >
           <View style={styles.actionContent}>
             <Ionicons name="lock-closed-outline" size={24} color={colors.primary} />
-            <Text style={styles.actionText}>Alterar Senha</Text>
+            <Text style={styles.actionText}>Change Password</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={colors.primary} />
         </TouchableOpacity>
@@ -169,20 +169,20 @@ export function SecurityScreen() {
       {/* Sessions Section */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>📱 Sessões Ativas</Text>
+          <Text style={styles.sectionTitle}>📱 Active Sessions</Text>
           {sessions && sessions.length > 0 && (
             <TouchableOpacity
               onPress={handleLogoutAllSessions}
               style={styles.logoutAllButton}
             >
-              <Text style={styles.logoutAllText}>Sair de todas</Text>
+              <Text style={styles.logoutAllText}>Logout from all</Text>
             </TouchableOpacity>
           )}
         </View>
 
         {isLoadingSessions ? (
           <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>Carregando sessões...</Text>
+            <Text style={styles.loadingText}>Loading sessions...</Text>
           </View>
         ) : !sessions || sessions.length === 0 ? (
           <View style={styles.emptyContainer}>
@@ -191,7 +191,7 @@ export function SecurityScreen() {
               size={48}
               color={colors.textSecondary}
             />
-            <Text style={styles.emptyText}>Nenhuma sessão ativa</Text>
+            <Text style={styles.emptyText}>No active sessions</Text>
           </View>
         ) : (
           sessions.map((session) => (
@@ -206,12 +206,12 @@ export function SecurityScreen() {
                   <Text style={styles.sessionPlatform}>
                     {session.platform === 'mobile' ? 'Mobile' : 'Web'}
                     {session.isCurrent && (
-                      <Text style={styles.currentBadge}> (Atual)</Text>
+                      <Text style={styles.currentBadge}> (Current)</Text>
                     )}
                   </Text>
                 </View>
                 <Text style={styles.sessionDate}>
-                  Última atividade: {formatDate(session.lastActivity)}
+                  Last activity: {formatDate(session.lastActivity)}
                 </Text>
               </View>
               {!session.isCurrent && (
@@ -230,12 +230,12 @@ export function SecurityScreen() {
 
       {/* Account Info Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>📧 Informações da Conta</Text>
+        <Text style={styles.sectionTitle}>📧 Account Information</Text>
         <View style={styles.infoCard}>
           <Text style={styles.infoLabel}>Email</Text>
           <Text style={styles.infoValue}>{user?.email}</Text>
           <Text style={styles.infoNotice}>
-            Seu email é usado para recuperação de conta.
+            Your email is used for account recovery.
           </Text>
         </View>
       </View>
@@ -250,7 +250,7 @@ export function SecurityScreen() {
         >
           <Ionicons name="log-out-outline" size={24} color={colors.error} />
           <Text style={styles.logoutText}>
-            {logoutMutation.isPending ? 'Saindo...' : 'Sair'}
+            {logoutMutation.isPending ? 'Logging out...' : 'Logout'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -263,8 +263,8 @@ export function SecurityScreen() {
 
       <ConfirmDeleteModal
         visible={logoutAllModalVisible}
-        title="Sair de Todas as Sessões"
-        message="Tem certeza que deseja sair de todas as sessões? Você precisará fazer login novamente em todos os dispositivos."
+        title="Logout from All Sessions"
+        message="Are you sure you want to logout from all sessions? You will need to sign in again on all devices."
         onConfirm={confirmLogoutAll}
         onCancel={() => setLogoutAllModalVisible(false)}
         isLoading={logoutAllSessionsMutation.isPending}

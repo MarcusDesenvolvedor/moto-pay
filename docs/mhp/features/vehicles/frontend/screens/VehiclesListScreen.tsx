@@ -50,13 +50,13 @@ export function VehiclesListScreen() {
       await deleteVehicleMutation.mutateAsync(vehicleToDelete.id);
       setDeleteModalVisible(false);
       setVehicleToDelete(null);
-      Alert.alert('Sucesso', 'Veículo deletado com sucesso!');
+      Alert.alert('Success', 'Vehicle deleted successfully!');
     } catch (error: any) {
       const errorMessage =
         error?.response?.data?.message ||
         error?.message ||
-        'Não foi possível deletar o veículo. Tente novamente.';
-      Alert.alert('Erro', errorMessage);
+        'Could not delete vehicle. Please try again.';
+      Alert.alert('Error', errorMessage);
     }
   };
 
@@ -70,7 +70,7 @@ export function VehiclesListScreen() {
       <View style={styles.vehicleInfo}>
         <Text style={styles.vehicleName}>{item.name}</Text>
         {item.plate && (
-          <Text style={styles.vehiclePlate}>Placa: {item.plate}</Text>
+          <Text style={styles.vehiclePlate}>Plate: {item.plate}</Text>
         )}
         {item.note && (
           <Text style={styles.vehicleNote} numberOfLines={2}>
@@ -91,12 +91,12 @@ export function VehiclesListScreen() {
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
       <Ionicons name="car-outline" size={64} color={colors.textSecondary} />
-      <Text style={styles.emptyTitle}>Nenhum veículo cadastrado</Text>
+      <Text style={styles.emptyTitle}>No vehicles registered</Text>
       <Text style={styles.emptyText}>
-        Adicione seu primeiro veículo para começar
+        Add your first vehicle to get started
       </Text>
       <Button
-        title="Adicionar Veículo"
+        title="Add Vehicle"
         onPress={handleAddVehicle}
         style={styles.emptyButton}
       />
@@ -116,12 +116,12 @@ export function VehiclesListScreen() {
       <View style={styles.container}>
         <View style={styles.errorContainer}>
           <Ionicons name="alert-circle-outline" size={48} color={colors.error} />
-          <Text style={styles.errorTitle}>Erro ao carregar veículos</Text>
+          <Text style={styles.errorTitle}>Error loading vehicles</Text>
           <Text style={styles.errorText}>
-            {error instanceof Error ? error.message : 'Erro desconhecido'}
+            {error instanceof Error ? error.message : 'Unknown error'}
           </Text>
           <Button
-            title="Tentar Novamente"
+            title="Try Again"
             onPress={() => refetch()}
             variant="outline"
             style={styles.retryButton}
@@ -163,8 +163,8 @@ export function VehiclesListScreen() {
       {/* Delete Confirmation Modal */}
       <ConfirmDeleteModal
         visible={deleteModalVisible}
-        title="Deletar Veículo"
-        message="Tem certeza que deseja deletar o veículo"
+        title="Delete Vehicle"
+        message="Are you sure you want to delete the vehicle"
         itemName={vehicleToDelete?.name}
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

@@ -44,7 +44,7 @@ export function ProfileStack() {
         name="ProfileMain"
         component={ProfileScreen}
         options={{
-          title: 'Perfil',
+          title: 'Profile',
           headerShown: false,
         }}
       />
@@ -52,7 +52,7 @@ export function ProfileStack() {
         name="EditProfile"
         component={EditProfileScreen}
         options={({ navigation }) => ({
-          title: 'Editar Perfil',
+          title: 'Edit Profile',
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => navigation.goBack()}
@@ -67,7 +67,7 @@ export function ProfileStack() {
         name="VehiclesList"
         component={VehiclesListScreen}
         options={({ navigation }) => ({
-          title: 'Meus Veículos',
+          title: 'My Vehicles',
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => navigation.goBack()}
@@ -82,7 +82,7 @@ export function ProfileStack() {
         name="AddVehicle"
         component={AddVehicleScreen}
         options={({ navigation }) => ({
-          title: 'Adicionar Veículo',
+          title: 'Add Vehicle',
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => navigation.goBack()}
@@ -97,7 +97,7 @@ export function ProfileStack() {
         name="CompaniesList"
         component={CompaniesListScreen}
         options={({ navigation }) => ({
-          title: 'Minhas Empresas',
+          title: 'My Companies',
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => navigation.goBack()}
@@ -112,7 +112,7 @@ export function ProfileStack() {
         name="CreateCompany"
         component={CreateCompanyScreen}
         options={({ navigation }) => ({
-          title: 'Criar Empresa',
+          title: 'Create Company',
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => navigation.goBack()}
@@ -127,7 +127,7 @@ export function ProfileStack() {
         name="Security"
         component={SecurityScreen}
         options={({ navigation }) => ({
-          title: 'Segurança',
+          title: 'Security',
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => navigation.goBack()}

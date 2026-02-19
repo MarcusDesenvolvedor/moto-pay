@@ -133,9 +133,9 @@ export function HomeReportsScreen() {
   if (companies.length === 0) {
     return (
       <View style={styles.emptyState}>
-        <Text style={styles.emptyTitle}>Nenhuma empresa</Text>
+        <Text style={styles.emptyTitle}>No companies</Text>
         <Text style={styles.emptyText}>
-          Crie ou entre em uma empresa para ver relatórios.
+          Create or join a company to see reports.
         </Text>
       </View>
     );
@@ -162,9 +162,9 @@ export function HomeReportsScreen() {
       }
     >
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Relatórios</Text>
+        <Text style={styles.headerTitle}>Reports</Text>
         <Text style={styles.headerSubtitle}>
-          Receitas, despesas e lucro por período
+          Income, expenses and profit by period
         </Text>
       </View>
 
@@ -182,14 +182,14 @@ export function HomeReportsScreen() {
       {hasError && (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>
-            Não foi possível carregar os dados.
+            Could not load data.
           </Text>
           <TouchableOpacity
             style={styles.retryButton}
             onPress={handleRefresh}
             activeOpacity={0.8}
           >
-            <Text style={styles.retryButtonText}>Tentar novamente</Text>
+            <Text style={styles.retryButtonText}>Try again</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -197,21 +197,21 @@ export function HomeReportsScreen() {
       {!hasError && (
         <>
           <View style={styles.todaySection}>
-            <Text style={styles.todaySectionTitle}>Hoje</Text>
+            <Text style={styles.todaySectionTitle}>Today</Text>
             <View style={styles.summaryContainer}>
               <DailySummaryCard
                 type="income"
                 value={todayIncome}
-                label="Ganhos"
+                label="Income"
               />
               <DailySummaryCard
                 type="expense"
                 value={todayExpense}
-                label="Gastos"
+                label="Expenses"
               />
             </View>
             <View style={styles.profitCard}>
-              <Text style={styles.profitLabel}>Lucro hoje</Text>
+              <Text style={styles.profitLabel}>Profit today</Text>
               <Text
                 style={[
                   styles.profitValue,

@@ -6,7 +6,7 @@ Provide financial reports with charts for income, expenses, and profit — alway
 
 ## Main Use Cases
 
-1. View daily summary (receitas e despesas do dia)
+1. View daily summary (income and expenses of the day)
 2. View evolution of income vs expenses by period (day, week, month)
 3. View distribution by category (pie chart)
 4. View distribution by vehicle (bar chart)
@@ -32,13 +32,13 @@ All endpoints require `companyId` as query parameter. User must belong to the co
 
 - **HomeReportsScreen**: Main reports screen with:
   - Company selector (chips)
-  - Period selector (Hoje, Semana, Mês)
+  - Period selector (Today, Week, Month)
   - Vehicle filter (optional, for category chart)
-  - Daily summary cards (Receitas hoje, Despesas hoje)
-  - Lucro hoje (when period = day)
-  - Evolution chart (StackedBar: Receitas x Despesas por período)
-  - Category chart (Pie: distribuição por categoria)
-  - Vehicle chart (Bar: lucro por veículo)
+  - Daily summary cards (Income today, Expenses today)
+  - Profit today (when period = day)
+  - Evolution chart (StackedBar: Income x Expenses per period)
+  - Category chart (Pie: distribution by category)
+  - Vehicle chart (Bar: profit per vehicle)
 
 ### Charts
 
@@ -55,9 +55,9 @@ All endpoints require `companyId` as query parameter. User must belong to the co
 ### States
 
 - **Loading**: Skeleton/spinner during fetch
-- **Empty**: "Nenhum dado no período selecionado" when no data
-- **Error**: Message + "Tentar novamente" button
-- **No company**: "Crie ou entre em uma empresa para ver relatórios"
+- **Empty**: "No data for the selected period" when no data
+- **Error**: Message + "Try again" button
+- **No company**: "Create or join a company to view reports"
 
 ## Entities Used
 

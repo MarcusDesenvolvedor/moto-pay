@@ -22,8 +22,8 @@ import { typography } from '../../../../../../../shared/theme/typography';
 import { spacing } from '../../../../../../../shared/theme/spacing';
 
 const editProfileSchema = z.object({
-  fullName: z.string().min(1, 'Nome é obrigatório'),
-  email: z.string().email('Email inválido'),
+  fullName: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email'),
 });
 
 type EditProfileFormData = z.infer<typeof editProfileSchema>;
@@ -72,7 +72,7 @@ export function EditProfileScreen() {
         fullName: data.fullName,
       });
 
-      Alert.alert('Sucesso', 'Perfil atualizado com sucesso!', [
+      Alert.alert('Success', 'Profile updated successfully!', [
         {
           text: 'OK',
           onPress: () => {
@@ -84,8 +84,8 @@ export function EditProfileScreen() {
       const errorMessage =
         error?.response?.data?.message ||
         error?.message ||
-        'Não foi possível atualizar o perfil. Tente novamente.';
-      Alert.alert('Erro', errorMessage);
+        'Could not update profile. Please try again.';
+      Alert.alert('Error', errorMessage);
     }
   };
 
@@ -98,7 +98,7 @@ export function EditProfileScreen() {
 
       if (newAvatarUrl) {
         setLocalAvatarUri(newAvatarUrl);
-        Alert.alert('Sucesso', 'Foto de perfil atualizada com sucesso!');
+        Alert.alert('Success', 'Profile photo updated successfully!');
       }
     } catch (error: unknown) {
       setLocalAvatarUri(profile?.avatarUrl || null);
@@ -109,8 +109,8 @@ export function EditProfileScreen() {
       const errorMessage =
         err?.response?.data?.message ??
         err?.message ??
-        'Não foi possível fazer upload da foto. Tente novamente.';
-      Alert.alert('Erro', errorMessage);
+        'Could not upload photo. Please try again.';
+      Alert.alert('Error', errorMessage);
     }
   };
 
@@ -126,7 +126,7 @@ export function EditProfileScreen() {
     return (
       <View style={styles.container}>
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Erro ao carregar perfil</Text>
+          <Text style={styles.emptyText}>Error loading profile</Text>
         </View>
       </View>
     );
@@ -152,10 +152,10 @@ export function EditProfileScreen() {
             isUploading={isUploadingAvatar}
           />
           <Text style={styles.avatarHint}>
-            Toque na foto para alterar
+            Tap on the photo to change
           </Text>
           {isUploadingAvatar && (
-            <Text style={styles.uploadingText}>Enviando foto...</Text>
+            <Text style={styles.uploadingText}>Uploading photo...</Text>
           )}
         </View>
 
@@ -166,12 +166,12 @@ export function EditProfileScreen() {
             name="fullName"
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
-                label="Nome *"
+                label="Name *"
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 error={errors.fullName?.message}
-                placeholder="Digite seu nome completo"
+                placeholder="Enter your full name"
                 autoCapitalize="words"
               />
             )}
@@ -189,7 +189,7 @@ export function EditProfileScreen() {
                 onChangeText={onChange}
                 onBlur={onBlur}
                 error={errors.email?.message}
-                placeholder="seu@email.com"
+                placeholder="your@email.com"
                 keyboardType="email-address"
                 autoCapitalize="none"
                 editable={false}
@@ -199,7 +199,7 @@ export function EditProfileScreen() {
           />
 
           <Text style={styles.emailHint}>
-            O email não pode ser alterado
+            Email cannot be changed
           </Text>
         </View>
 
@@ -208,7 +208,7 @@ export function EditProfileScreen() {
         {updateError && (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>
-              {updateError?.message || 'Erro ao atualizar perfil'}
+              {updateError?.message || 'Error updating profile'}
             </Text>
           </View>
         )}
@@ -216,7 +216,7 @@ export function EditProfileScreen() {
         {/* Save Button */}
         <View style={styles.buttonContainer}>
           <Button
-            title="Salvar"
+            title="Save"
             onPress={handleSubmit(onSubmit)}
             disabled={isUpdating}
             loading={isUpdating}
