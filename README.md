@@ -2,7 +2,7 @@
 
 **Driver & motorcycle rider management — income/expense tracking, vehicles, and financial reports.**
 
-Full-stack mobile application for motorcycle riders and drivers who earn income with their vehicles. Supports multi-company contexts (MEI, PJ, small fleets), vehicle and mileage data, financial records (income/expense), and reports — all scoped by company with role-based access.
+Full-stack mobile application for motorcycle riders and drivers who earn income with their vehicles. The user manages **companies** (clients) and **vehicles** (their own, independent). Financial entries associate company + vehicle; reports by period, category, and vehicle.
 
 > **Portuguese documentation:** [README.pt-BR.md](README.pt-BR.md)
 
@@ -20,6 +20,7 @@ Full-stack mobile application for motorcycle riders and drivers who earn income 
 | **Auth** | JWT (access + refresh), Passport, bcrypt |
 | **Storage** | Expo Secure Store (tokens) |
 | **Media** | Cloudinary (avatar upload) |
+| **Charts** | react-native-chart-kit, react-native-svg, react-native-svg-transformer |
 | **Build** | EAS (Expo Application Services) for Android/iOS |
 
 ---
@@ -39,23 +40,24 @@ moto-pay/
 │   ├── storage/               # Token storage (Secure Store)
 │   ├── animations/            # Transitions, tokens
 │   └── infrastructure/        # Prisma service, Cloudinary service
+├── shared/assets/             # SVGs and assets (e.g. avatar fallback)
 ├── docs/mhp/
 │   ├── business-logic.md      # Business rules (single source of truth)
 │   ├── data-model.md
 │   └── features/              # Feature-based modules (backend + frontend)
 │       ├── authentication/    # Login, signup, refresh, JWT guards
-│       ├── companies/         # Create company, list, delete
-│       ├── vehicles/          # CRUD vehicles (list, add, delete)
+│       ├── companies/         # Create, list, delete (companies = user's clients)
+│       ├── vehicles/          # CRUD vehicles (belong to user, not company)
 │       ├── add-transaction/   # Create income/expense (company + vehicle)
-│       ├── reports/           # Daily summary, reports summary (by date)
-│       ├── profile/           # Profile screen, edit profile, avatar
+│       ├── reports/           # Daily summary, charts (evolution, category, vehicle), tap-to-show values
+│       ├── profile/           # Profile, edit, avatar (SVG fallback when no photo)
 │       └── security/          # Change password, sessions
 ├── src/                       # NestJS backend entry
 │   ├── main.ts                # Bootstrap, ValidationPipe, CORS
 │   ├── app.module.ts          # Feature modules, PrismaService
 │   └── ...
 ├── prisma/
-│   ├── schema.prisma          # User, Company, CompanyUser, Vehicle, MileageRecord, FinancialRecord, RefreshToken
+│   ├── schema.prisma          # User, Company (userId), Vehicle (userId), MileageRecord, FinancialRecord, RefreshToken
 │   └── migrations/
 ├── android/                    # Native Android (Expo)
 ├── app.config.js              # Expo config (MotoPay, slug, env)
@@ -72,14 +74,14 @@ moto-pay/
 ## Main features
 
 - **Authentication** — Email/password signup and login; JWT access + refresh; tokens in Secure Store; auth state (Zustand) and init on app load.
-- **Companies** — Create company, list companies, delete company; user–company association with roles (OWNER/MEMBER); all data scoped by company.
-- **Vehicles** — List vehicles, add vehicle (name, type, plate, model, year, note), delete vehicle; vehicles belong to a company.
-- **Transactions** — Add income/expense per company and vehicle (amount, paid, date, note); validation and company membership checks.
-- **Reports** — Daily summary (income/expense for today); reports summary by date range; data aggregated from financial records, company-scoped.
-- **Profile** — View profile, edit profile (e.g. name), avatar upload (Cloudinary).
+- **Companies** — Companies are the user's **clients** (`Company.userId`). Create, list, delete; data scoped per company.
+- **Vehicles** — Vehicles belong to the **user** (`Vehicle.userId`), not to the company. List, add, delete.
+- **Transactions** — Add income/expense associating company (client) + user's vehicle; permission validation.
+- **Reports** — Daily summary; charts (evolution, category, vehicle) with values hidden by default and **tap to show**; abbreviation for large numbers (1.5k, 2.3M).
+- **Profile** — View profile, edit profile (e.g. name), avatar upload (Cloudinary). SVG fallback when user has no photo.
 - **Security** — Change password; list/revoke sessions (backend DTOs and security feature).
 
-Business rules (multi-company, vehicle and financial constraints, no cross-company data, financial immutability) are documented in `docs/mhp/business-logic.md`.
+Business rules (companies as clients, independent vehicles, immutable transactions) are in `docs/mhp/business-logic.md`.
 
 ---
 
@@ -145,11 +147,11 @@ npm run start
 
 ## Usage (high level)
 
-1. **Sign up / log in** — Create account or login; tokens are stored and used for all API calls.
-2. **Create a company** — From profile, open "My Companies" and create a company.
-3. **Add vehicles** — In "My Vehicles", add vehicles linked to the company.
-4. **Register transactions** — Use the "Add" tab to add income or expense for a company and vehicle.
-5. **View reports** — Home tab shows daily summary and report chart for the selected period.
+1. **Sign up / log in** — Create account or login; tokens stored and used for all API calls.
+2. **Companies** — From profile: "My Companies" to create companies (clients).
+3. **Vehicles** — In "My Vehicles": register vehicles (user's own).
+4. **Transactions** — "Add" tab: income or expense (company + vehicle).
+5. **Reports** — Home: daily summary and charts; tap to show/hide values.
 6. **Profile & security** — Edit profile/avatar and change password or manage sessions from the profile stack.
 
 ---
@@ -169,6 +171,7 @@ npm run start
 - **Shared**
   - **Design tokens** — Centralized colors, typography, spacing in `shared/theme/`.
   - **Reusable components** — Buttons, inputs, loading, modals, animated tab bar components used across screens.
+  - **SVG** — `react-native-svg-transformer` to import SVGs as components; avatar fallback in `shared/assets/`.
 
 ---
 
@@ -186,7 +189,7 @@ npm run start
 
 ## Project status
 
-**Active.** The app implements authentication, multi-company and vehicle management, financial transactions, reports, profile with avatar, and security (change password / sessions). Backend and mobile coexist in one repo with shared types and config. Suitable for portfolio and further evolution (tests, reporting, integrations) without changing core architecture.
+**Active.** The app covers authentication, company (clients) and vehicle (independent) management, financial transactions, interactive reports with charts, profile with avatar (SVG fallback), and security. Backend and mobile in the same repo. Suitable for portfolio and evolution (tests, export, integrations) without changing core architecture.
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Gestão para motoristas e motociclistas — controle de receitas, despesas, veículos e relatórios financeiros.**
 
-Aplicativo mobile full-stack voltado a motociclistas e motoristas que geram renda com o veículo. Suporta contexto multi-empresas (MEI, PJ, frotas pequenas), cadastro de veículos e quilometragem, lançamentos financeiros (receita/despesa) e relatórios — tudo escopado por empresa, com acesso por perfis de usuário.
+Aplicativo mobile full-stack voltado a motociclistas e motoristas que geram renda com o veículo. O usuário gerencia **empresas** (clientes) e **veículos** (próprios, independentes). Lançamentos financeiros associam empresa + veículo; relatórios por período, categoria e veículo.
 
 > **Documentation in English:** [README.md](README.md)
 
@@ -20,6 +20,7 @@ Aplicativo mobile full-stack voltado a motociclistas e motoristas que geram rend
 | **Auth** | JWT (access + refresh), Passport, bcrypt |
 | **Armazenamento** | Expo Secure Store (tokens) |
 | **Mídia** | Cloudinary (upload de avatar) |
+| **Gráficos** | react-native-chart-kit, react-native-svg, react-native-svg-transformer |
 | **Build** | EAS (Expo Application Services) para Android/iOS |
 
 ---
@@ -39,23 +40,24 @@ moto-pay/
 │   ├── storage/                # Armazenamento de tokens (Secure Store)
 │   ├── animations/             # Transições, tokens
 │   └── infrastructure/         # Prisma service, Cloudinary service
+├── shared/assets/              # SVGs e assets (ex.: fallback de avatar)
 ├── docs/mhp/
 │   ├── business-logic.md      # Regras de negócio (fonte única de verdade)
 │   ├── data-model.md
 │   └── features/               # Módulos por feature (backend + frontend)
 │       ├── authentication/    # Login, signup, refresh, guards JWT
-│       ├── companies/          # Criar empresa, listar, excluir
-│       ├── vehicles/           # CRUD de veículos (listar, adicionar, excluir)
-│       ├── add-transaction/    # Criar receita/despesa (empresa + veículo)
-│       ├── reports/            # Resumo diário, resumo de relatórios (por data)
-│       ├── profile/            # Tela de perfil, editar perfil, avatar
+│       ├── companies/          # Criar empresa, listar, excluir (empresas = clientes do usuário)
+│       ├── vehicles/           # CRUD de veículos (pertencem ao usuário, não à empresa)
+│       ├── add-transaction/   # Criar receita/despesa (empresa + veículo)
+│       ├── reports/            # Resumo diário, gráficos (evolução, categoria, veículo), tap-to-show valores
+│       ├── profile/            # Perfil, editar, avatar (fallback SVG sem foto)
 │       └── security/           # Alterar senha, sessões
 ├── src/                        # Entrada do backend NestJS
 │   ├── main.ts                 # Bootstrap, ValidationPipe, CORS
 │   ├── app.module.ts           # Módulos de features, PrismaService
 │   └── ...
 ├── prisma/
-│   ├── schema.prisma           # User, Company, CompanyUser, Vehicle, MileageRecord, FinancialRecord, RefreshToken
+│   ├── schema.prisma           # User, Company (userId), Vehicle (userId), MileageRecord, FinancialRecord, RefreshToken
 │   └── migrations/
 ├── android/                    # Android nativo (Expo)
 ├── app.config.js              # Config do app Expo (MotoPay, slug, env)
@@ -72,14 +74,14 @@ moto-pay/
 ## Principais funcionalidades
 
 - **Autenticação** — Cadastro e login com e-mail/senha; JWT access + refresh; tokens no Secure Store; estado de auth (Zustand) e inicialização na abertura do app.
-- **Empresas** — Criar empresa, listar empresas, excluir empresa; vínculo usuário–empresa com papéis (OWNER/MEMBER); todos os dados escopados por empresa.
-- **Veículos** — Listar veículos, adicionar veículo (nome, tipo, placa, modelo, ano, observação), excluir veículo; veículos pertencem a uma empresa.
-- **Transações** — Adicionar receita/despesa por empresa e veículo (valor, pago, data, observação); validação e checagem de vínculo com a empresa.
-- **Relatórios** — Resumo diário (receita/despesa do dia); resumo de relatórios por período; dados agregados dos registros financeiros, escopados por empresa.
-- **Perfil** — Visualizar perfil, editar perfil (ex.: nome), upload de avatar (Cloudinary).
+- **Empresas** — Empresas são **clientes** do usuário (`Company.userId`). Criar, listar, excluir; dados escopados por empresa.
+- **Veículos** — Veículos pertencem ao **usuário** (`Vehicle.userId`), não à empresa. Listar, adicionar, excluir.
+- **Transações** — Adicionar receita/despesa associando empresa (cliente) + veículo do usuário; validação de permissões.
+- **Relatórios** — Resumo do dia; gráficos (evolução, categoria, veículo) com valores ocultos por padrão e **tap para mostrar**; abreviação para números grandes (1.5k, 2.3M).
+- **Perfil** — Visualizar perfil, editar perfil (ex.: nome), upload de avatar (Cloudinary). Fallback SVG quando o usuário não tem foto.
 - **Segurança** — Alterar senha; listar/revogar sessões (DTOs no backend e feature de segurança).
 
-As regras de negócio (multi-empresa, restrições de veículo e financeiro, sem mistura de dados entre empresas, imutabilidade financeira) estão em `docs/mhp/business-logic.md`.
+As regras de negócio (empresas como clientes, veículos independentes, transações imutáveis) estão em `docs/mhp/business-logic.md`.
 
 ---
 
@@ -145,12 +147,12 @@ npm run start
 
 ## Exemplos de uso
 
-1. **Cadastro / login** — Criar conta ou entrar; os tokens são armazenados e usados em todas as chamadas à API.
-2. **Criar empresa** — Pelo perfil, abra “Minhas Empresas” e crie uma empresa.
-3. **Adicionar veículos** — Em “Meus Veículos”, cadastre veículos vinculados à empresa.
-4. **Registrar transações** — Use a aba “Adicionar” para lançar receita ou despesa para uma empresa e veículo.
-5. **Ver relatórios** — A aba Home exibe o resumo do dia e o gráfico de relatórios do período selecionado.
-6. **Perfil e segurança** — Edite perfil/avatar e altere senha ou gerencie sessões a partir do stack de perfil.
+1. **Cadastro / login** — Criar conta ou entrar; tokens armazenados e usados em todas as chamadas à API.
+2. **Empresas** — Pelo perfil: "Minhas Empresas" para criar empresas (clientes).
+3. **Veículos** — Em "Meus Veículos": cadastrar veículos (próprios do usuário).
+4. **Transações** — Aba "Adicionar": receita ou despesa (empresa + veículo).
+5. **Relatórios** — Home: resumo do dia e gráficos; toque para exibir/ocultar valores.
+6. **Perfil e segurança** — Edite perfil/avatar e altere senha ou gerencie sessões pelo stack de perfil.
 
 ---
 
@@ -168,7 +170,8 @@ npm run start
   - **Estado do servidor** — React Query para relatórios, listas e dados vindos da API; padrão consistente de loading e refetch.
 - **Compartilhado**
   - **Design tokens** — Cores, tipografia e espaçamento centralizados em `shared/theme/`.
-  - **Componentes reutilizáveis** — Botões, inputs, loading, modais e componentes animados da barra de abas usados nas telas.
+  - **Componentes reutilizáveis** — Botões, inputs, loading, modais e componentes animados da barra de abas.
+  - **SVG** — `react-native-svg-transformer` para importar SVGs como componentes; fallback de avatar em `shared/assets/`.
 
 ---
 
@@ -186,7 +189,7 @@ npm run start
 
 ## Status do projeto
 
-**Ativo.** O app cobre autenticação, gestão multi-empresas e de veículos, transações financeiras, relatórios, perfil com avatar e segurança (alterar senha / sessões). Backend e mobile convivem no mesmo repositório com tipos e configuração compartilhados. Adequado para portfolio e para evolução de produto ou técnica (testes, relatórios, integrações) sem alterar a arquitetura central.
+**Ativo.** O app cobre autenticação, gestão de empresas (clientes) e veículos (independentes), transações financeiras, relatórios com gráficos interativos, perfil com avatar (fallback SVG) e segurança. Backend e mobile no mesmo repositório. Adequado para portfolio e evolução (testes, exportação, integrações) sem alterar a arquitetura central.
 
 ---
 
