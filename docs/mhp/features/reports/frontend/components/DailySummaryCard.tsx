@@ -17,10 +17,15 @@ export function DailySummaryCard({
   value,
   label,
 }: DailySummaryCardProps) {
-  const formattedValue = new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  }).format(value);
+  const formattedValue =
+    value >= 1_000_000
+      ? `R$ ${(value / 1_000_000).toFixed(1)}M`
+      : value >= 1_000
+        ? `R$ ${(value / 1_000).toFixed(1)}k`
+        : new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+          }).format(value);
 
   const cardColor = type === 'income' ? colors.success : colors.error;
 

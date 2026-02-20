@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import DefaultAvatarSvg from '../../../../../../shared/assets/undraw_selfie-fun_0qzh.svg';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { colors } from '../../../../../../shared/theme/colors';
 
@@ -107,8 +108,8 @@ export function Avatar({
         ) : imageUri ? (
           <Image source={{ uri: imageUri }} style={styles.avatarImage} />
         ) : (
-          <View style={styles.placeholder}>
-            <Ionicons name="person" size={size * 0.5} color={colors.textSecondary} />
+          <View style={[styles.placeholder, { width: size, height: size }]}>
+            <DefaultAvatarSvg width={size} height={size} />
           </View>
         )}
         {editable && !isLoading && (

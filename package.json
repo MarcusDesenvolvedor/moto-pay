@@ -55,6 +55,7 @@
     "babel-preset-expo": "^54.0.9",
     "http-proxy-middleware": "^3.0.5",
     "prisma": "^5.19.0",
+    "react-native-svg-transformer": "^1.5.3",
     "typescript": "^5.5.0"
   },
   "scripts": {

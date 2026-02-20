@@ -1,11 +1,11 @@
-import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Dimensions, Pressable } from 'react-native';
 import { StackedBarChart } from 'react-native-chart-kit';
 import { colors } from '../../../../../../shared/theme/colors';
 import { typography } from '../../../../../../shared/theme/typography';
 import { spacing } from '../../../../../../shared/theme/spacing';
 import { AnimatedCard } from '../../../../../../shared/components/animated/AnimatedCard';
-import { reportsChartConfig } from './chart-config';
+import { getReportsChartConfig } from './chart-config';
 import { ReportsSummaryItem } from '../types/reports.types';
 
 interface EvolutionChartProps {
@@ -17,6 +17,8 @@ const CHART_HEIGHT = 200;
 const MAX_POINTS = 10;
 
 export function EvolutionChart({ data }: EvolutionChartProps) {
+  const [showValues, setShowValues] = useState(false);
+
   if (!data || data.length === 0) {
     return (
       <AnimatedCard style={styles.container}>
@@ -44,15 +46,20 @@ export function EvolutionChart({ data }: EvolutionChartProps) {
   return (
     <AnimatedCard style={styles.container} delay={50}>
       <Text style={styles.title}>Income vs Expenses Evolution</Text>
-      <StackedBarChart
-        data={chartData}
-        width={CHART_WIDTH}
-        height={CHART_HEIGHT}
-        yAxisLabel="R$ "
-        yAxisSuffix=""
-        chartConfig={reportsChartConfig}
-        style={styles.chart}
-      />
+      <Pressable onPress={() => setShowValues((v) => !v)}>
+        <StackedBarChart
+          data={chartData}
+          width={CHART_WIDTH}
+          height={CHART_HEIGHT}
+          yAxisLabel={showValues ? 'R$ ' : ''}
+          yAxisSuffix=""
+          chartConfig={getReportsChartConfig(showValues)}
+          style={styles.chart}
+        />
+      </Pressable>
+      <Text style={styles.tapHint}>
+        {showValues ? 'Tap to hide values' : 'Tap to show values'}
+      </Text>
       <View style={styles.legend}>
         <View style={styles.legendItem}>
           <View style={[styles.legendColor, { backgroundColor: colors.success }]} />
@@ -109,5 +116,11 @@ const styles = StyleSheet.create({
   legendText: {
     ...typography.bodySmall,
     color: colors.textSecondary,
+  },
+  tapHint: {
+    ...typography.bodySmall,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginTop: spacing.xs,
   },
 });

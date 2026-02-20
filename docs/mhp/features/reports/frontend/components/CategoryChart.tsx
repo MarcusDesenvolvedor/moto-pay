@@ -1,11 +1,11 @@
-import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Dimensions, Pressable } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import { colors } from '../../../../../../shared/theme/colors';
 import { typography } from '../../../../../../shared/theme/typography';
 import { spacing } from '../../../../../../shared/theme/spacing';
 import { AnimatedCard } from '../../../../../../shared/components/animated/AnimatedCard';
-import { reportsChartConfig } from './chart-config';
+import { getReportsChartConfig } from './chart-config';
 import { ReportsByCategoryItem } from '../types/reports.types';
 
 interface CategoryChartProps {
@@ -23,6 +23,8 @@ const PIE_COLORS = [
 ];
 
 export function CategoryChart({ data }: CategoryChartProps) {
+  const [showValues, setShowValues] = useState(false);
+
   if (!data || data.length === 0) {
     return (
       <AnimatedCard style={styles.container} delay={100}>
@@ -45,17 +47,22 @@ export function CategoryChart({ data }: CategoryChartProps) {
   return (
     <AnimatedCard style={styles.container} delay={100}>
       <Text style={styles.title}>By Category</Text>
-      <PieChart
-        data={chartData}
-        width={CHART_SIZE}
-        height={180}
-        chartConfig={reportsChartConfig}
-        accessor="total"
-        backgroundColor="transparent"
-        paddingLeft="15"
-        absolute
-        hasLegend
-      />
+      <Pressable onPress={() => setShowValues((v) => !v)}>
+        <PieChart
+          data={chartData}
+          width={CHART_SIZE}
+          height={180}
+          chartConfig={getReportsChartConfig(showValues)}
+          accessor="total"
+          backgroundColor="transparent"
+          paddingLeft="15"
+          absolute={showValues}
+          hasLegend={showValues}
+        />
+      </Pressable>
+      <Text style={styles.tapHint}>
+        {showValues ? 'Tap to hide values' : 'Tap to show values'}
+      </Text>
     </AnimatedCard>
   );
 }
@@ -77,5 +84,11 @@ const styles = StyleSheet.create({
   emptyText: {
     ...typography.body,
     color: colors.textSecondary,
+  },
+  tapHint: {
+    ...typography.bodySmall,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginTop: spacing.xs,
   },
 });

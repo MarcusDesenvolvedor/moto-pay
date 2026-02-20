@@ -5,9 +5,9 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../../../../../shared/theme/colors';
 import { ImageViewerModal } from '../../../../../../shared/components/ImageViewerModal';
+import DefaultAvatarSvg from '../../../../../../shared/assets/undraw_selfie-fun_0qzh.svg';
 
 interface ProfileAvatarViewProps {
   imageUri?: string | null;
@@ -42,8 +42,8 @@ export function ProfileAvatarView({
           {imageUri ? (
             <Image source={{ uri: imageUri }} style={styles.avatarImage} />
           ) : (
-            <View style={styles.placeholder}>
-              <Ionicons name="person" size={size * 0.5} color={colors.textSecondary} />
+            <View style={[styles.placeholder, { width: size, height: size }]}>
+              <DefaultAvatarSvg width={size} height={size} />
             </View>
           )}
         </View>
