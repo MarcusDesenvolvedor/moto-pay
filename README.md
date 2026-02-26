@@ -100,6 +100,7 @@ Business rules (companies as clients, independent vehicles, immutable transactio
 git clone <repository-url>
 cd moto-pay
 npm install
+npm install --save-dev @nestjs/cli
 ```
 
 ### 2. Environment

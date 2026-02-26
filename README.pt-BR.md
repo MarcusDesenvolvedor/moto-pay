@@ -100,6 +100,7 @@ As regras de negócio (empresas como clientes, veículos independentes, transaç
 git clone <url-do-repositorio>
 cd moto-pay
 npm install
+npm install --save-dev @nestjs/cli
 ```
 
 ### 2. Variáveis de ambiente
