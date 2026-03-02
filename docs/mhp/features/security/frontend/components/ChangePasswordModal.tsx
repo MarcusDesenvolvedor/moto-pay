@@ -15,6 +15,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Ionicons } from '@expo/vector-icons';
 import { useChangePassword } from '../hooks/use-change-password';
+import { useLogout } from '../../../profile/frontend/hooks/use-logout';
 import { Input } from '../../../../../../shared/components/Input';
 import { Button } from '../../../../../../shared/components/Button';
 import { colors } from '../../../../../../shared/theme/colors';
@@ -24,7 +25,10 @@ import { spacing } from '../../../../../../shared/theme/spacing';
 const changePasswordSchema = z
   .object({
     currentPassword: z.string().min(1, 'Current password is required'),
-    newPassword: z.string().min(6, 'New password must be at least 6 characters'),
+    newPassword: z
+      .string()
+      .min(1, 'New password is required')
+      .min(8, 'New password must be at least 8 characters'),
     confirmPassword: z.string().min(1, 'Password confirmation is required'),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
@@ -42,6 +46,7 @@ export function ChangePasswordModal({
   onClose,
 }: ChangePasswordModalProps) {
   const changePasswordMutation = useChangePassword();
+  const logoutMutation = useLogout();
   const {
     control,
     handleSubmit,
@@ -67,19 +72,14 @@ export function ChangePasswordModal({
         newPassword: data.newPassword,
       });
 
+      reset();
+      onClose();
+
+      await logoutMutation.mutateAsync();
+
       Alert.alert(
         'Success',
-        'Password changed successfully! You will need to sign in again.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              reset();
-              onClose();
-              // Note: User will be logged out automatically after password change
-            },
-          },
-        ],
+        'Password changed successfully! Please sign in again with your new password.',
       );
     } catch (error: any) {
       const errorMessage =
@@ -121,6 +121,7 @@ export function ChangePasswordModal({
             <ScrollView
               style={styles.scrollView}
               contentContainerStyle={styles.scrollContent}
+              keyboardShouldPersistTaps="handled"
             >
               <Controller
                 control={control}
@@ -173,27 +174,20 @@ export function ChangePasswordModal({
                   />
                 )}
               />
-            </ScrollView>
 
-            <View style={styles.footer}>
-              <Button
-                title="Cancel"
-                onPress={handleCancel}
-                variant="outline"
-                disabled={changePasswordMutation.isPending}
-                style={styles.cancelButton}
-              />
-              <Button
-                title={
-                  changePasswordMutation.isPending
-                    ? 'Changing...'
-                    : 'Change Password'
-                }
-                onPress={handleSubmit(onSubmit)}
-                disabled={changePasswordMutation.isPending}
-                style={styles.submitButton}
-              />
-            </View>
+              <View style={styles.footer}>
+                <Button
+                  title={
+                    changePasswordMutation.isPending
+                      ? 'Changing...'
+                      : 'Change Password'
+                  }
+                  onPress={handleSubmit(onSubmit)}
+                  disabled={changePasswordMutation.isPending}
+                  style={styles.submitButton}
+                />
+              </View>
+            </ScrollView>
           </View>
         </View>
       </KeyboardAvoidingView>
@@ -214,7 +208,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgroundSecondary,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    maxHeight: '90%',
+    height: '70%',
     paddingTop: spacing.lg,
   },
   header: {
@@ -235,6 +229,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    minHeight: 0,
   },
   scrollContent: {
     padding: spacing.lg,
@@ -243,17 +238,12 @@ const styles = StyleSheet.create({
     height: spacing.md,
   },
   footer: {
-    flexDirection: 'row',
     padding: spacing.lg,
-    gap: spacing.md,
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },
-  cancelButton: {
-    flex: 1,
-  },
   submitButton: {
-    flex: 1,
+    width: '100%',
   },
 });
 

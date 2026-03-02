@@ -145,7 +145,8 @@ export function SecurityScreen() {
       <ScrollView
         style={styles.flex}
         contentContainerStyle={styles.content}
-      refreshControl={
+        keyboardShouldPersistTaps="handled"
+        refreshControl={
         <RefreshControl
           refreshing={isLoadingSessions}
           onRefresh={refetch}
